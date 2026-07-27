@@ -1,26 +1,56 @@
-# MemoryLake 方法简介
+# MemoryLake — Method Overview
 
-**MemoryLake** 是我们在 MemoryArena 基准上评测的记忆系统。它是一套**双轨（dual-track）**记忆，
-把"实例知识"与"可复用过程"分开处理，并通过标准适配器接口
-（`add_chunk(chunk)` / `wrap_user_prompt(question)`，按 `user_id` 隔离）接入 MemoryArena
-——与其它记忆基线完全一致。
+**MemoryLake** is a structured **multi-track** memory system. It connects through
+MemoryArena's standard memory-service interface and uses **one generic configuration
+across all five tasks, with no task-specific adaptation**. The interface has two calls:
 
-## 双轨设计
+- `add_chunk(chunk)` — writes each completed subtask's trajectory and outcome to memory;
+- `wrap_user_prompt(question)` — returns the retrieved memory context for each new
+  subtask, prepended to the question as the agent's input.
 
-- **DOC 轨（按用户 / 会话）。** 每一段 agent 轨迹（chunk）都写入该用户的知识库，并组织成两个互补视图：
-  - **QA 视图** —— 后续步骤可复用的**已解出**的事实 / 结论；
-  - **PROCESS 视图** —— 结论是**如何**得到的（过程）。
+Memory is isolated per instance: each task instance gets an independent `user_id` and is
+reset before it starts.
 
-  查询时对两个视图分别做 top-k 检索，注入到一个受预算约束的 `<memory_context>` 中。
-  DOC 轨由 MemoryLake 的知识 / 检索服务支撑。
+## Design principle: presence policies matched to workload heterogeneity
 
-- **SKILL 轨（按任务族，全局共享）。** 从已完成的轨迹里蒸馏出简短、**去实例化**的**可复用过程**（"技能"）
-  —— 即某一类任务的关键步骤 + 容易踩的坑。技能经去重后汇成一个精简库，仅在当前任务与之相关时才注入。
+MemoryLake is organized around a single design principle: **memory content of different
+natures should follow different presence policies.** At the representation level, three
+tracks coexist:
 
-## 召回与注入
+1. **Confirmed conclusions** of completed subtasks are maintained as an ordered record and
+   made **deterministically present** at every subsequent subtask, bypassing
+   retrieval-similarity uncertainty.
+2. **Supporting evidence** from prior trajectories — both declarative findings and
+   procedural traces — is stored for **on-demand semantic retrieval**.
+3. **Reusable problem-solving experience** (skills) is consolidated for **cross-subtask
+   transfer**.
 
-在 `wrap_user_prompt` 时，MemoryLake 把两条轨的召回合并成单个 `<memory_context>` 块，
-并受**按任务族的 token 预算**约束，保证记忆不会挤占任务本身的 prompt。
-所有 LLM 调用（蒸馏、检索整理、judge）都使用同一个任务模型。
+At recall time, the three tracks are assembled into a single **bounded** context under an
+overall length budget, with redundant content filtered. On any internal-service failure,
+the system degrades to returning empty context and continues — it never blocks the agent.
 
-> 本目录仅记录**评测设置**；MemoryLake 的实现单独维护，不包含在此贡献中。
+The design hypothesis: confirmed conclusions must be unconditionally present, procedural
+evidence should be retrieved on demand, and transferable skills should be reused across
+subtasks — a single representation (pure fact entries or pure chunks) cannot structurally
+satisfy all three.
+
+## Representation differences from the baselines
+
+| System | Memory representation | Recall mechanism |
+|--------|-----------------------|------------------|
+| Long Context | None (verbatim trajectory flattened into the context) | No retrieval; everything unconditionally present |
+| Mem0 | Extractive fact entries | Similar-fact recall |
+| text-embedding-3-small | Raw trajectory chunks (vectors) | Similar-chunk recall |
+| **MemoryLake** | Multi-track: confirmed conclusions, supporting evidence, reusable skills | Deterministic conclusion presence + on-demand retrieval + skill reuse, within a bounded assembly |
+
+## Disclosure scope
+
+This description is deliberately at the **representation and policy level**. Implementation
+specifics — storage layout, indexing and consolidation mechanisms, assembly heuristics —
+are proprietary and omitted. This does not affect interpretability of the evaluation: the
+interface, task protocols, metrics, and denominators are fully specified in
+[`evaluation_settings.md`](evaluation_settings.md), and all systems are scored by the
+benchmark's official scripts.
+
+> This directory documents evaluation settings and method only; the MemoryLake
+> implementation is not included.
