@@ -27,11 +27,17 @@ comparison** — one agent framework, one base model, one batch of task samples,
 protocol, with the **memory layer as the only experimental variable**:
 
 - **MemoryLake** — structured multi-track memory (confirmed conclusions, supporting
-  evidence, reusable skills, each under a different presence policy)
+  evidence, reusable skills, each under a different presence policy) →
+  [`docs/method.md`](docs/method.md)
 - **Mem0** — extractive fact memory
 - **text-embedding-3-small** — naive vector-chunk RAG
 - **Long Context** — no memory system; the full trajectory flattened verbatim into the
   prompt, as a zero-abstraction, full-fidelity control
+
+Side-by-side representation and recall mechanisms:
+[`docs/method.md` § Representation differences](docs/method.md#representation-differences-from-the-baselines).
+Base model, per-task samples, metrics and denominators:
+[`docs/evaluation_settings.md`](docs/evaluation_settings.md).
 
 ## Headline findings
 
@@ -51,6 +57,11 @@ protocol, with the **memory layer as the only experimental variable**:
 Together: **memory representation structure should be matched to the structure of the
 workload it serves, and that match should be validated against task outcomes (SR) rather
 than process-level completeness (PS) alone.**
+
+The evaluated scale behind each number — including the controlled 20-query multi-hop subset
+and the 50-bundle shopping intersection — is stated in
+[`docs/evaluation_settings.md` § Tasks, datasets and evaluated scale](docs/evaluation_settings.md#tasks-datasets-and-evaluated-scale),
+with the exact items in [`docs/queries/`](docs/queries/).
 
 ## Documentation
 

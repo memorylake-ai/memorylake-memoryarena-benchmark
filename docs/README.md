@@ -1,7 +1,14 @@
 # MemoryLake on MemoryArena — Evaluation Settings
 
-Index of the evaluation documentation. For the study's motivation, the systems compared, and
-the headline findings, see the [top-level README](../README.md).
+This directory documents **how MemoryLake was evaluated** on the MemoryArena benchmark, as
+a controlled, single-variable comparison against three baselines (Mem0,
+text-embedding-3-small RAG, and a no-memory Long Context configuration): the datasets and
+evaluated sample sizes, the agent / memory / judge configuration, and a short method
+overview.
+
+**Scope:** settings and documentation only. The MemoryLake implementation is not included
+(consistent with the accompanying paper's disclosure scope — representation and policy are
+described; storage, indexing, consolidation, and assembly are proprietary).
 
 ## Contents
 
