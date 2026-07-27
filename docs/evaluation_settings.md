@@ -9,15 +9,16 @@
 
 ## 任务、数据集与所选条目
 
-评测覆盖 MemoryArena 五个任务的 **test 集全量**。各任务的条目 id 明细见 [`queries/`](queries/)：
+评测覆盖 MemoryArena 五个任务。**除旅行规划取其中 30 组子集外，其余任务均为 test 集全量。**
+各任务实际评测的条目 id 明细见 [`queries/`](queries/)：
 
-| 任务 | 环境 / 数据集 | 规模（test 全量） | 条目明细 |
-|------|--------------|------------------|----------|
-| 形式化推理 · 数学 | HF `ZexueHe/memoryarena`，配置 `formal_reasoning_math`，`test` split | **40** 篇 paper | [`queries/formal_reasoning_math_ids.tsv`](queries/formal_reasoning_math_ids.tsv) |
-| 形式化推理 · 物理 | HF `ZexueHe/memoryarena`，配置 `formal_reasoning_phys`，`test` split | **20** 篇 paper | [`queries/formal_reasoning_phys_ids.tsv`](queries/formal_reasoning_phys_ids.tsv) |
-| 旅行规划 | 基于 TravelPlanner 的环境 | **270** 条 query | [`queries/travel_query_ids.tsv`](queries/travel_query_ids.tsv) |
-| 网购 | 基于 WebShop 的环境 | **150** 个任务（5 类别 × 30） | [`queries/shopping_task_ids.tsv`](queries/shopping_task_ids.tsv) |
-| 网络搜索 | BrowseComp-Plus（渐进式） | **221** 条 query | [`queries/web_search_query_ids.tsv`](queries/web_search_query_ids.tsv) |
+| 任务 | 环境 / 数据集 | 实际评测规模 | 条目明细 |
+|------|--------------|------------|----------|
+| 形式化推理 · 数学 | HF `ZexueHe/memoryarena`，配置 `formal_reasoning_math`，`test` split | **40** 篇 paper（全量） | [`queries/formal_reasoning_math_ids.tsv`](queries/formal_reasoning_math_ids.tsv) |
+| 形式化推理 · 物理 | HF `ZexueHe/memoryarena`，配置 `formal_reasoning_phys`，`test` split | **20** 篇 paper（全量） | [`queries/formal_reasoning_phys_ids.tsv`](queries/formal_reasoning_phys_ids.tsv) |
+| 旅行规划 | 基于 TravelPlanner 的环境 | **30** 组（270 中的子集） | [`queries/travel_query_ids.tsv`](queries/travel_query_ids.tsv) |
+| 网购 | 基于 WebShop 的环境 | **150** 个任务（5 类别 × 30，全量） | [`queries/shopping_task_ids.tsv`](queries/shopping_task_ids.tsv) |
+| 网络搜索 | BrowseComp-Plus（渐进式） | **221** 条 query（全量） | [`queries/web_search_query_ids.tsv`](queries/web_search_query_ids.tsv) |
 
 ## 各任务说明
 
@@ -25,7 +26,7 @@
   是多步 / 多会话的推理链。id 明细含 `paper_name` 与 `num_questions`。
 - **网购**：5 个类别（`baking` / `beauty` / `electronics` / `grocery` / `home`），每类 30 个任务，
   每步上限 20；判分为**步骤精确匹配**（所选商品 ASIN）。
-- **旅行规划**：270 条多人物、多约束的行程规划场景，每条上限 30 步。
+- **旅行规划**：从 TravelPlanner test 集（共 270 组）中取 **30 组**评测（id：1–18, 20, 22, 23, 25, 26, 28, 29, 30, 31, 32, 36, 38），均为多人物、多约束的行程规划场景，每条上限 30 步。
 - **网络搜索**：**渐进式多子查询** —— 每条 query 拆成 **4–16 个子查询**（均值 7.4、中位 7）外加一个最终合并 query；
   检索 agent 在 BrowseComp-Plus 语料上工作：**top-k = 10** 段落、**每段截断 ≤ 512 token**、**最多 35 轮**；
   记忆在**每个子查询完成后写入一次**（渐进累积），最终合并 query 只读取记忆、不写入。
