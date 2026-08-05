@@ -66,6 +66,35 @@ ordered sequence of interdependent subtasks; memory accumulates and transfers kn
   The **controlled four-system comparison uses a fixed 20-query / 142-sub-query subset**
   (matched to the smaller travel / shopping sample sizes).
 
+  **How that subset is drawn.** It is a deterministic **proportional stratified sample on
+  decomposition depth** — no random seed is involved:
+
+  1. stratify the 221 decomposed queries by depth (`num_subqueries`, i.e. sub-queries plus the
+     final combined query);
+  2. quota per stratum = `round(stratum_size × 20 / 221)`;
+  3. within a stratum, take the lowest query ids.
+
+  | depth | in the 221 | quota | ids |
+  |---|---|---|---|
+  | 4 | 7 | 1 | 15 |
+  | 5 | 30 | 3 | 130, 149, 165 |
+  | 6 | 42 | 4 | 11, 121, 124, 160 |
+  | 7 | 45 | 4 | 49, 50, 54, 107 |
+  | 8 | 45 | 4 | 51, 67, 131, 175 |
+  | 9 | 20 | 2 | 126, 132 |
+  | 10 | 13 | 1 | 60 |
+  | 11 | 11 | 1 | 180 |
+  | 12–16 | 8 | 0 | — |
+  | | **221** | **20** | **142 slots** |
+
+  Depth is the variable the task is built to stress — a conclusion has to survive every step of
+  the chain — so sampling proportionally on it keeps the subset's difficulty profile matched to
+  the full 221 rather than skewed toward short or long chains.
+
+  [`../eval/sample_controlled_20.py`](../eval/sample_controlled_20.py) reproduces the manifest
+  from [`../eval/queries/web_search_memorylake_221_ids.tsv`](../eval/queries/web_search_memorylake_221_ids.tsv)
+  offline — `--verify` checks it against the published list, `--tsv` regenerates it byte for byte.
+
   **Slot coverage must be reported alongside `PS`.** A sub-query slot yields no answer when
   the agent exhausts its search-iteration budget without emitting one; `web_ps_score.py`
   skips such slots rather than scoring them 0, so its `PS` denominator is *answered* slots

@@ -7,6 +7,7 @@ scores, and the one scoring script that is not part of MemoryArena.
 eval/
 ├── queries/                  the exact items evaluated in each task
 ├── results/                  per-item scores behind every published number
+├── sample_controlled_20.py   rebuild/verify the controlled 20-query subset (offline)
 ├── web_ps_score.py           multi-hop PS/SR scorer (not in MemoryArena)
 ├── slot_coverage.py          slot coverage + both PS denominators, from the judge cache
 └── merge_slots.py            slot-level merge of multi-hop runs, original-run-first
@@ -28,6 +29,23 @@ multi-hop scorer is ours:
 MemoryArena ships no end-to-end scorer for the progressive multi-hop task — it provides the
 judge (`evaluate_with_openai.py`) but not the per-query PS/SR aggregation — which is why
 `web_ps_score.py` exists.
+
+## Reproducing the controlled 20-query subset
+
+The subset is a deterministic proportional stratified sample on decomposition depth — no random
+seed. `sample_controlled_20.py` rebuilds it from `queries/web_search_memorylake_221_ids.tsv`
+offline, with no LLM calls and no need for the raw BrowseComp-Plus dataset:
+
+```bash
+python eval/sample_controlled_20.py            # show the strata, quotas and selected ids
+python eval/sample_controlled_20.py --verify    # check against the published manifest
+python eval/sample_controlled_20.py --tsv       # regenerate the manifest byte for byte
+```
+
+The rule and the per-stratum quotas are documented in
+[`../docs/evaluation_settings.md`](../docs/evaluation_settings.md). The original selection
+script was not preserved; this rule was recovered from the published subset and reproduces it
+exactly, so it is a verified reconstruction rather than the original code.
 
 ## Usage
 

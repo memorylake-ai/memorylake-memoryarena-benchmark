@@ -41,27 +41,40 @@ Base model, per-task samples, metrics and denominators:
 
 ## Headline findings
 
-- **Structured multi-track memory attains the best result on the primary metric of four of
-  the five tasks**, with its advantage largest on workloads with recognizable structure.
+- **Structured multi-track memory attains the best result on the primary metric of three of
+  the five tasks** — both formal-reasoning domains and progressive multi-hop retrieval — and
+  its advantage is largest on workloads with recognizable structure.
 - Its largest success-rate gain appears where dependency chains are short and reuse must be
   exact — **physics reasoning: SR 60.0% vs 45.0%** for the runner-up long-context baseline.
 - **PS and SR do not always move together.** On progressive multi-hop retrieval the
-  process-level gap among memory-augmented systems is small (**PS 8.9% vs 7.2% and 7.8%**)
-  while final-success differences are large (**SR 23.5% vs 12.5% and 0%**). A small
-  process-level gap can hide a much larger gap in final success — the reverse of what a
-  process-level comparison alone would suggest.
-- **The clear exception is group travel planning**, a workload dominated by high-volume,
-  homogeneous verbatim replay, where full verbatim context outperforms every memory
-  representation.
+  process-level gap over the strongest baseline is about a point (**PS 6.7% vs 5.6%**) while
+  the final-success gap is tenfold larger (**SR 20.0% vs 10.0%**). A small process-level gap
+  can hide a much larger gap in final success — the reverse of what a process-level comparison
+  alone would suggest.
+- **The two exceptions are group travel planning and bundled web shopping**, both dominated by
+  high-volume, homogeneous verbatim replay, where full verbatim context matches or beats every
+  memory representation (travel **SPS 53.1% vs 43.0%**; shopping **step-match 30.0% vs 29.6%**,
+  with the top three systems inside 0.4pp and therefore indistinguishable at this sample size).
 
 Together: **memory representation structure should be matched to the structure of the
 workload it serves, and that match should be validated against task outcomes (SR) rather
-than process-level completeness (PS) alone.**
+than process-level completeness (PS) alone.** The two workloads where structure does not pay
+off are precisely the replay-dominated ones, which is the same boundary seen from both sides.
 
-The evaluated scale behind each number — including the controlled 20-query multi-hop subset
-and the 50-bundle shopping intersection — is stated in
+The evaluated scale behind each number — the full 150-bundle shopping set, the controlled
+20-query multi-hop subset and how that subset is drawn — is stated in
 [`docs/evaluation_settings.md` § Tasks, datasets and evaluated scale](docs/evaluation_settings.md#tasks-datasets-and-evaluated-scale),
-with the exact items in [`eval/queries/`](eval/queries/).
+with the exact items in [`eval/queries/`](eval/queries/) and the per-item scores in
+[`eval/results/per_item_scores.md`](eval/results/per_item_scores.md).
+
+> **On the multi-hop numbers.** `PS` is quoted on the all-slots denominator, which is the one
+> comparable across systems: the benchmark's scorer skips unanswered sub-query slots rather
+> than scoring them 0, and slot coverage ranged from 22.5% to 94.4% here. Mem0's multi-hop
+> figures (`PS` 1.9%, `SR` 0.0%) are reported for completeness but are **not** a capability
+> estimate — it answered only 22.5% of slots and reached the final query on 0 of 20 tasks
+> because its cloud API rejects the oversized memory writes the environment issues. See the
+> coverage table and reproducibility notes in
+> [`docs/evaluation_settings.md`](docs/evaluation_settings.md).
 
 ## Documentation
 
@@ -84,7 +97,9 @@ Three issues confirmed during reproduction affect how the original benchmark pap
    our absolute scores are not directly comparable to its results table.
 2. The progressive decomposition count measured in the dataset is **221**, not the 256 cited.
 3. On the 20-query multi-hop subset, the reported numbers could not be reproduced with the
-   benchmark's public evaluation method, and no reproducible sampling list is provided.
+   benchmark's public evaluation method, and no reproducible sampling list is provided. Our own
+   subset is drawn by a deterministic rule and can be regenerated offline —
+   [`eval/sample_controlled_20.py --verify`](eval/sample_controlled_20.py).
 
 None of these affect the relative comparison among our four systems, which share identical
 measured data and protocol.
