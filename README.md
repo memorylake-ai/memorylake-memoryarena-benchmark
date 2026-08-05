@@ -74,6 +74,31 @@ with the exact items in [`docs/queries/`](docs/queries/).
 This repository documents the *evaluation*; the MemoryLake implementation is not included
 (see the disclosure scope in [`docs/method.md`](docs/method.md)).
 
+## Getting the benchmark code
+
+The MemoryArena implementation is **referenced as a git submodule, not vendored** — this
+repository stores only a URL and a commit id, so the exact code behind every number is pinned
+and reproducible without redistributing upstream source:
+
+```bash
+git clone https://github.com/memorylake-ai/memorylake-memoryarena-benchmark
+cd memorylake-memoryarena-benchmark
+git submodule update --init third_party/MemoryArena     # NOT --recursive
+```
+
+> ⚠️ Do not use `--recursive` / `--recurse-submodules`. MemoryArena declares a submodule
+> (`MemActBench`) whose repository is not publicly reachable, so a recursive clone fails.
+
+`third_party/MemoryArena` is pinned to
+[`6cd9de1`](https://github.com/memorylake-ai/MemoryArena/tree/6cd9de14b71915e39ac742a20dc33785e14b6aab)
+of a fork of [`ZexueHe/MemoryArena`](https://github.com/ZexueHe/MemoryArena).
+
+> **Licensing.** The Apache-2.0 license of this repository covers this repository's files only.
+> Upstream MemoryArena publishes **no license**, so its code is not redistributed here and no
+> license is asserted over it; see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) for the
+> full attribution list, the components MemoryArena itself bundles (TravelPlanner, WebShop,
+> DeepResearch, MemoRAG, …) and their terms.
+
 ## Reproducibility notes on MemoryArena v1
 
 Three issues confirmed during reproduction affect how the original benchmark paper
