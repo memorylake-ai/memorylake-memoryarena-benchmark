@@ -61,7 +61,7 @@ than process-level completeness (PS) alone.**
 The evaluated scale behind each number — including the controlled 20-query multi-hop subset
 and the 50-bundle shopping intersection — is stated in
 [`docs/evaluation_settings.md` § Tasks, datasets and evaluated scale](docs/evaluation_settings.md#tasks-datasets-and-evaluated-scale),
-with the exact items in [`docs/queries/`](docs/queries/).
+with the exact items in [`eval/queries/`](eval/queries/).
 
 ## Documentation
 
@@ -69,7 +69,8 @@ with the exact items in [`docs/queries/`](docs/queries/).
   representation differs from the baselines.
 - [`docs/evaluation_settings.md`](docs/evaluation_settings.md) — base model, per-task
   datasets and evaluated scale, metric definitions, and scoring procedure.
-- [`docs/queries/`](docs/queries/) — the exact items evaluated in each task.
+- [`eval/`](eval/) — the items evaluated, the per-item scores, and the multi-hop scoring
+  script (the other four tasks are scored by MemoryArena's own code).
 
 This repository documents the *evaluation*; the MemoryLake implementation is not included
 (see the disclosure scope in [`docs/method.md`](docs/method.md)).

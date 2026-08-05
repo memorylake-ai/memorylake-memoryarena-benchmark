@@ -17,10 +17,10 @@ described; storage, indexing, consolidation, and assembly are proprietary).
   policies).
 - [`evaluation_settings.md`](evaluation_settings.md) — the four systems, base model,
   per-task datasets, evaluated scale, and scoring.
-- [`queries/`](queries/) — the exact items evaluated per task:
-  - [`formal_reasoning_math_ids.tsv`](queries/formal_reasoning_math_ids.tsv) — 40 papers (`id`, `paper_name`, `num_questions`)
-  - [`formal_reasoning_phys_ids.tsv`](queries/formal_reasoning_phys_ids.tsv) — 20 papers
-  - [`travel_query_ids.tsv`](queries/travel_query_ids.tsv) — 30 groups (`id`; fixed-ID subset of 270)
-  - [`shopping_task_ids.tsv`](queries/shopping_task_ids.tsv) — 150 bundles (`category`, `task_file`); the cross-system comparison is scored on the 50-bundle intersection (`item_0`–`item_9` per category)
-  - [`web_search_controlled_20_ids.tsv`](queries/web_search_controlled_20_ids.tsv) — 20 queries (`query_id`, `num_subqueries`); the controlled four-system multi-hop subset
-  - [`web_search_memorylake_221_ids.tsv`](queries/web_search_memorylake_221_ids.tsv) — 221 queries; MemoryLake-only robustness check (not part of the four-system comparison)
+- [`../eval/queries/`](../eval/queries/) — the exact items evaluated per task:
+  - [`formal_reasoning_math_ids.tsv`](../eval/queries/formal_reasoning_math_ids.tsv) — 40 papers (`id`, `paper_name`, `num_questions`)
+  - [`formal_reasoning_phys_ids.tsv`](../eval/queries/formal_reasoning_phys_ids.tsv) — 20 papers
+  - [`travel_query_ids.tsv`](../eval/queries/travel_query_ids.tsv) — 30 groups (`id`; fixed-ID subset of 270)
+  - [`shopping_task_ids.tsv`](../eval/queries/shopping_task_ids.tsv) — 150 bundles (`category`, `task_file`); all four systems completed the full set, so the cross-system comparison is scored on all 150
+  - [`web_search_controlled_20_ids.tsv`](../eval/queries/web_search_controlled_20_ids.tsv) — 20 queries (`query_id`, `num_subqueries`); the controlled four-system multi-hop subset
+  - [`web_search_memorylake_221_ids.tsv`](../eval/queries/web_search_memorylake_221_ids.tsv) — 221 queries; MemoryLake-only robustness check (not part of the four-system comparison)

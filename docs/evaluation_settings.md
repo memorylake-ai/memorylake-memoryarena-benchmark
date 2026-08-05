@@ -27,11 +27,11 @@ ordered sequence of interdependent subtasks; memory accumulates and transfers kn
 
 | Task | HF config / source | Evaluated scale (controlled comparison) | Query manifest |
 |------|--------------------|------------------------------------------|----------------|
-| Formal reasoning · math | `formal_reasoning_math`, `test` | **40 papers / 354 subproblems** (full) | [`queries/formal_reasoning_math_ids.tsv`](queries/formal_reasoning_math_ids.tsv) |
-| Formal reasoning · physics | `formal_reasoning_phys`, `test` | **20 papers / 86 subproblems** (full) | [`queries/formal_reasoning_phys_ids.tsv`](queries/formal_reasoning_phys_ids.tsv) |
-| Group travel planning | `group_travel_planner` (TravelPlanner) | **30 groups / 208 member problems** — fixed-ID list, identical across all four systems (of 270 groups) | [`queries/travel_query_ids.tsv`](queries/travel_query_ids.tsv) |
-| Bundled web shopping | `bundled_shopping` (WebShop) | **150 bundles / 900 steps** (full) — all four systems completed the full set | [`queries/shopping_task_ids.tsv`](queries/shopping_task_ids.tsv) |
-| Progressive multi-hop retrieval | BrowseComp-Plus | **20 queries / 142 sub-queries** — fixed subset, all four systems | [`queries/web_search_controlled_20_ids.tsv`](queries/web_search_controlled_20_ids.tsv) |
+| Formal reasoning · math | `formal_reasoning_math`, `test` | **40 papers / 354 subproblems** (full) | [`../eval/queries/formal_reasoning_math_ids.tsv`](../eval/queries/formal_reasoning_math_ids.tsv) |
+| Formal reasoning · physics | `formal_reasoning_phys`, `test` | **20 papers / 86 subproblems** (full) | [`../eval/queries/formal_reasoning_phys_ids.tsv`](../eval/queries/formal_reasoning_phys_ids.tsv) |
+| Group travel planning | `group_travel_planner` (TravelPlanner) | **30 groups / 208 member problems** — fixed-ID list, identical across all four systems (of 270 groups) | [`../eval/queries/travel_query_ids.tsv`](../eval/queries/travel_query_ids.tsv) |
+| Bundled web shopping | `bundled_shopping` (WebShop) | **150 bundles / 900 steps** (full) — all four systems completed the full set | [`../eval/queries/shopping_task_ids.tsv`](../eval/queries/shopping_task_ids.tsv) |
+| Progressive multi-hop retrieval | BrowseComp-Plus | **20 queries / 142 sub-queries** — fixed subset, all four systems | [`../eval/queries/web_search_controlled_20_ids.tsv`](../eval/queries/web_search_controlled_20_ids.tsv) |
 
 ## Per-task notes
 
@@ -51,7 +51,7 @@ ordered sequence of interdependent subtasks; memory accumulates and transfers kn
   (900 steps). **All four systems completed the full 150-bundle set**, so scoring uses the
   complete 150-bundle / 900-step protocol set; no intersection subsetting is applied.
   `step-match%` = exact-ASIN match per step; `SR` requires all 6 steps to hit.
-  Per-bundle numbers: [`results/per_item_scores.md`](results/per_item_scores.md).
+  Per-bundle numbers: [`../eval/results/per_item_scores.md`](../eval/results/per_item_scores.md).
 
   On the full set the three strongest systems fall within 0.4pp of each other —
   Long Context 30.00% (270/900), text-embedding 29.67% (267/900), MemoryLake 29.56%
@@ -84,7 +84,7 @@ ordered sequence of interdependent subtasks; memory accumulates and transfers kn
   **Cross-system `PS` comparisons on this task should use the all-slots denominator.**
   Mem0's 22.5% coverage is low enough that neither of its `PS` figures should be read as a
   capability estimate — see the reproducibility note on its memory-write size limit.
-  Per-query numbers: [`results/per_item_scores.md`](results/per_item_scores.md).
+  Per-query numbers: [`../eval/results/per_item_scores.md`](../eval/results/per_item_scores.md).
 
 ## MemoryLake-only robustness check (not part of the four-system comparison)
 
@@ -92,7 +92,7 @@ As a sample-size robustness check on the 20-query estimate, MemoryLake **alone**
 additionally run on the **full 221 progressive queries (1,641 sub-queries)**; its scores
 are consistent with the 20-query subset. This check does **not** include the three
 baselines and supports no claim about relative standing at n=221. Manifest:
-[`queries/web_search_memorylake_221_ids.tsv`](queries/web_search_memorylake_221_ids.tsv).
+[`../eval/queries/web_search_memorylake_221_ids.tsv`](../eval/queries/web_search_memorylake_221_ids.tsv).
 
 Slots left unanswered by an exhausted search-iteration budget were re-run and merged
 (original answers kept; a re-run answer is used only where the original produced none):
@@ -106,7 +106,7 @@ The re-run raises coverage to exactly the level of the controlled 20-query subse
 so the robustness check and the four-system comparison now rest on the same coverage.
 The remaining 103 unanswered slots (6.3%) are cases where the agent reached its iteration
 cap without emitting an answer — re-running does not recover them (see reproducibility
-notes). Per-query numbers: [`results/per_item_scores.md`](results/per_item_scores.md).
+notes). Per-query numbers: [`../eval/results/per_item_scores.md`](../eval/results/per_item_scores.md).
 
 ## Scoring
 
