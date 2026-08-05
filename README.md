@@ -88,6 +88,46 @@ Three issues confirmed during reproduction affect how the original benchmark pap
 None of these affect the relative comparison among our four systems, which share identical
 measured data and protocol.
 
+### Undocumented parameters that change scores
+
+Three settings that materially affect scores are not exposed in any config file, so a run
+made from the public code will not reproduce published numbers unless they are set
+explicitly. Values below are from MemoryArena v1 at the commit we reproduced.
+
+| Setting | Upstream value | Where it lives | Configurable? |
+|---|---|---|---|
+| Sub-query search-iteration cap | 30 (default), we set **35** | `max_iterations` in the run config | yes |
+| **Final-query search-iteration cap** | **30 — the config value is not applied** | `agent/search.py` default | **no** |
+| Agent output-token budget | **15000**, we set **32000** | hard-coded in `agent/search.py` | **no** |
+
+The middle row is a defect rather than a default: `BrowseCompPlusEnvironment.run_subqueries`
+passes `max_iterations=self.max_iterations` to the agent, but `run_final_query` omits the
+argument, so the final combined query silently falls back to the `agent/search.py` default
+of 30 while every sub-query of the same task gets the configured 35. **`SR` is computed
+solely from the final query**, so the metric most often quoted is the one measured under the
+smaller budget.
+
+Measured effect across our 386 final-query runs: 90 (23%) produced no answer, and **79 of
+those 90 stopped at exactly 30 tool calls** — the erroneous cap, not the configured one.
+Raising the cap is nevertheless not expected to recover most of them: among runs that *did*
+answer, the median used 7 tool calls and only 2 of 297 answered at the cap, so a run that
+reaches the cap has almost always stopped converging rather than nearly finished. We
+estimate a 1–4pp `SR` effect at n=221 and recommend fixing it to remove the confound, not
+because it unlocks many answers.
+
+A third failure mode is worth recording because it silently deletes whole tasks rather than
+lowering a score: when the agent returns no answer, upstream `agent/search.py` falls back to
+`str(full_result)`, which serialises the entire run object (~9 MB) into the answer field and
+sends it to the judge; the judge then exceeds its context window, returns 400, the
+environment step returns 500, and the whole query is dropped from the results. Mem0 hits a
+second instance of the same class of problem: the environment writes the full agent trace
+into memory (median 86.5k tokens per write), while the Mem0 cloud API rejects any single
+write above 100k tokens, so writes fail, the query aborts mid-chain, and **Mem0 reached the
+final query on 0 of 20 multi-hop tasks** — its `SR` of 0.0% reflects never answering rather
+than answering incorrectly. Both are implementation limits, not properties of the memory
+representations, and both should be fixed before the affected cells are read as capability
+measurements.
+
 ## Citation
 
 ```bibtex
