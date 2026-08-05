@@ -1,0 +1,4 @@
+[submodule "third_party/MemoryArena"]
+	path = third_party/MemoryArena
+	url = https://github.com/memorylake-ai/MemoryArena.git
+	branch = main
