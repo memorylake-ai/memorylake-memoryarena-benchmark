@@ -7,6 +7,8 @@ scores, and the one scoring script that is not part of MemoryArena.
 eval/
 ├── queries/                  the exact items evaluated in each task
 ├── results/                  per-item scores behind every published number
+│   └── mem0_write_limit.md   why Mem0's multi-hop SR is 0.0% (diagnostic, not a comparison)
+├── patches/                  patches against the pinned MemoryArena checkout
 ├── sample_controlled_20.py   rebuild/verify the controlled 20-query subset (offline)
 ├── web_ps_score.py           multi-hop PS/SR scorer (not in MemoryArena)
 ├── slot_coverage.py          slot coverage + both PS denominators, from the judge cache
@@ -64,6 +66,21 @@ WEB_ONLY_IDS="$(paste -sd, eval/queries/web_search_controlled_20_ids.tsv)" \
 # coverage + both PS denominators, from the cache (no LLM calls)
 python eval/slot_coverage.py <run_dir>
 ```
+
+## Mem0's per-write size limit
+
+Mem0's multi-hop `SR` of 0.0% is a *write failure*, not a recall failure: the environment
+writes the full agent trace into memory (median 58k tokens, max 217k) while the Mem0 cloud API
+rejects any single write above 100k tokens, so writes fail, the query aborts, and Mem0 reached
+the final combined query on **0 of 20** queries.
+
+[`results/mem0_write_limit.md`](results/mem0_write_limit.md) documents the diagnosis and the
+capped re-run (`0/20 -> 20/20` reaching the final query), and
+[`patches/mem0_write_cap.patch`](patches/mem0_write_cap.patch) is the change it used — gated on
+`memory_system_name == "mem0"` and `MEM_ADD_MAX_TOKENS`, so no other backend's input is altered.
+
+Those scores are a **modified baseline** and are not part of the four-system comparison; they
+exist to identify the cause. The comparison uses Mem0's original run.
 
 ## The PS denominator
 
