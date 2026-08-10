@@ -4,8 +4,8 @@ Per-item breakdown behind every number in the four-system comparison, recomputed
 result files with the official MemoryArena scoring code.
 
 **Data selection** — where a task was re-run, the newer run is used; bundled web shopping is
-scored on the 50-bundle subset (first 10 per category) extracted from the completed 150-bundle
-runs, with both scales reported; Mem0 progressive multi-hop uses the capped re-run, since the
+scored on the complete 150-bundle runs, with the first-10-per-category 50-bundle subset
+reported as a scale-sensitivity check; Mem0 progressive multi-hop uses the capped re-run, since the
 uncapped run never reaches the final query (see
 [`mem0_write_limit.md`](mem0_write_limit.md)).
 
@@ -14,7 +14,7 @@ uncapped run never reaches the final query (see
 - Formal reasoning · math — 40 papers
 - Formal reasoning · physics — 20 papers
 - Group travel planning — 30 groups / 208 members
-- Bundled web shopping — 50-bundle scored subset, drawn from 150-bundle runs
+- Bundled web shopping — full 150-bundle runs (50-bundle sensitivity subset alongside)
 - Progressive multi-hop retrieval — controlled 20 queries
 - Progressive multi-hop retrieval — MemoryLake n=221 robustness check
 
@@ -29,7 +29,7 @@ per-item table in the corresponding section below.
 | Formal reasoning · math (40 papers) | PS / SR | **29.5** / **22.5** | 28.4 / 20.0 | 28.9 / 17.5 | 27.6 / 12.5 |
 | Formal reasoning · physics (20 papers) | PS / SR | **64.5** / **60.0** | 45.9 / 30.0 | 57.4 / 40.0 | 59.1 / 45.0 |
 | Group travel planning (30 groups) | SPS / SR | 43.0 / 0.0 | 27.2 / 0.0 | 45.7 / 0.0 | **53.1** / 0.0 |
-| Bundled web shopping (50 bundles) | step-match / SR | 30.0 / 0.0 | 24.0 / 0.0 | **31.0** / 0.0 | 28.3 / 0.0 |
+| Bundled web shopping (150 bundles) | step-match / SR | 29.6 / 0.0 | 24.3 / 0.0 | 29.7 / 0.0 | **30.0** / **0.7** |
 | Progressive multi-hop (20 queries) | PS / SR | 6.7 / **20.0** | **8.9** / 15.0 | 5.6 / 10.0 | 5.3 / 10.0 |
 
 Four things this table is easy to over-read:
@@ -37,11 +37,13 @@ Four things this table is easy to over-read:
 1. **Multi-hop `PS` is on the all-slots denominator**, and Mem0's cell comes from the capped
    re-run — it is the only system that ran with an environment modification
    ([`mem0_write_limit.md`](mem0_write_limit.md)).
-2. **Shopping does not separate the systems.** The four span 7pp with `SR` at zero for all of
-   them, and on the full 150-bundle set the order differs (Long Context 30.0, text-embedding
-   29.7, MemoryLake 29.6, Mem0 24.3). Neither ordering is a ranking.
-3. **Travel and shopping have zero `SR` for every system**, so on those two rows only the
-   process metric carries information, and no system is shown to complete the task.
+2. **Shopping does not separate the systems.** The top three span 0.4pp and the only nonzero
+   `SR` is Long Context's single bundle (1/150 = 0.7%); on the 50-bundle sensitivity subset
+   the order differs (text-embedding 31.0, MemoryLake 30.0, Long Context 28.3, Mem0 24.0).
+   Neither ordering is a ranking.
+3. **Travel has zero `SR` for every system, and shopping all but zero** (one bundle in 150,
+   by Long Context), so on those two rows essentially only the process metric carries
+   information, and no system is shown to reliably complete the task.
 4. **`PS` and `SR` invert on multi-hop** — Mem0 leads the process metric while MemoryLake
    leads the outcome. This is the one row where picking by process-level completeness would
    pick the system that finishes fewer tasks.
@@ -187,14 +189,14 @@ Each cell: `members fully passing / members in group` · `SPS%` · `✓/✗` = a
 
 `matched steps / total steps` (exact-ASIN match), `✓/✗` = all 6 steps hit (SR).
 
-All four systems completed the full released set of 150 bundles. The cross-system comparison
-scores the **first 10 bundles of each category** — the 50 listed in
-[`../queries/shopping_task_ids.tsv`](../queries/shopping_task_ids.tsv) — so that the shopping
-sample is the same order of magnitude as travel (30 groups) and multi-hop (20 queries). Those
-50 are given first; the remaining 100, which the completed runs also cover, follow so the
-subset can be checked against the set it was drawn from.
+All four systems completed the full released set of 150 bundles, and the cross-system
+comparison scores all 150 — the manifest in
+[`../queries/shopping_task_ids.tsv`](../queries/shopping_task_ids.tsv). The **first 10 bundles
+of each category** form a 50-bundle scale-sensitivity subset
+([`../queries/shopping_sensitivity_50_ids.tsv`](../queries/shopping_sensitivity_50_ids.tsv));
+those 50 are given first, and the remaining 100 follow.
 
-### The 50 scored bundles (`item_0`–`item_9` of each category)
+### The first 10 bundles of each category (`item_0`–`item_9`) — the 50-bundle sensitivity subset
 
 | bundle | MemoryLake | Mem0 | text-embedding | Long Context |
 |---|---|---|---|---|
@@ -249,6 +251,8 @@ subset can be checked against the set it was drawn from.
 | home/item_8 | 0/6 ✗ | 0/6 ✗ | 2/6 ✗ | 0/6 ✗ |
 | home/item_9 | 2/6 ✗ | 1/6 ✗ | 2/6 ✗ | 3/6 ✗ |
 
+Totals over the 50-bundle sensitivity subset:
+
 | system | bundles | step-match | SR |
 |---|---|---|---|
 | MemoryLake | 50/50 | 30.00% (90/300) | 0.0% (0/50) |
@@ -256,7 +260,7 @@ subset can be checked against the set it was drawn from.
 | text-embedding | 50/50 | **31.00%** (93/300) | 0.0% (0/50) |
 | Long Context | 50/50 | 28.33% (85/300) | 0.0% (0/50) |
 
-### The remaining 100 bundles (`item_10`–`item_29`), not scored in the comparison
+### The remaining 100 bundles (`item_10`–`item_29`)
 
 | bundle | MemoryLake | Mem0 | text-embedding | Long Context |
 |---|---|---|---|---|
@@ -361,7 +365,7 @@ subset can be checked against the set it was drawn from.
 | home/item_28 | 2/6 ✗ | 1/6 ✗ | 0/6 ✗ | 2/6 ✗ |
 | home/item_29 | 2/6 ✗ | 3/6 ✗ | 1/6 ✗ | 3/6 ✗ |
 
-Totals over all 150 bundles, for reference:
+Totals over all 150 bundles — the scored cross-system comparison:
 
 | system | bundles | step-match | SR |
 |---|---|---|---|

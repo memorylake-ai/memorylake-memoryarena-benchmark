@@ -36,7 +36,7 @@ ordered sequence of interdependent subtasks; memory accumulates and transfers kn
 | Formal reasoning · math | `formal_reasoning_math`, `test` | **40 papers / 354 subproblems** (full) | [`../eval/queries/formal_reasoning_math_ids.tsv`](../eval/queries/formal_reasoning_math_ids.tsv) |
 | Formal reasoning · physics | `formal_reasoning_phys`, `test` | **20 papers / 86 subproblems** (full) | [`../eval/queries/formal_reasoning_phys_ids.tsv`](../eval/queries/formal_reasoning_phys_ids.tsv) |
 | Group travel planning | `group_travel_planner` (TravelPlanner) | **30 groups / 208 member problems** — fixed-ID list, identical across all four systems (of 270 groups) | [`../eval/queries/travel_query_ids.tsv`](../eval/queries/travel_query_ids.tsv) |
-| Bundled web shopping | `bundled_shopping` (WebShop) | **50 bundles / 300 steps** — first 10 of each of 5 categories, extracted from the completed 150-bundle runs of all four systems | [`../eval/queries/shopping_task_ids.tsv`](../eval/queries/shopping_task_ids.tsv) |
+| Bundled web shopping | `bundled_shopping` (WebShop) | **150 bundles / 900 steps** — the complete released set (5 categories × 30), completed by all four systems; the first 10 of each category form a 50-bundle scale-sensitivity subset | [`../eval/queries/shopping_task_ids.tsv`](../eval/queries/shopping_task_ids.tsv) |
 | Progressive multi-hop retrieval | BrowseComp-Plus | **20 queries / 142 slots** (122 sub-queries + 20 final combined queries) — fixed subset, all four systems | [`../eval/queries/web_search_controlled_20_ids.tsv`](../eval/queries/web_search_controlled_20_ids.tsv) |
 
 ## Per-task notes
@@ -55,10 +55,12 @@ ordered sequence of interdependent subtasks; memory accumulates and transfers kn
   identical across all four systems.
 - **Bundled web shopping** — the released set is 150 bundles (5 categories × 30), 6 sequential
   purchases each (900 steps), and **all four systems completed it in full**. The cross-system
-  table scores a fixed **50-bundle / 300-step subset — the first 10 bundles of each category**
-  — so that the shopping sample is the same order of magnitude as the travel (30 groups) and
-  multi-hop (20 queries) samples. The subset is *extracted from the completed 150-bundle runs*,
-  not run separately, so no system is measured on data another system did not see.
+  table scores that **complete 150-bundle / 900-step set**. A fixed **50-bundle sensitivity
+  subset — the first 10 bundles of each category**
+  ([`../eval/queries/shopping_sensitivity_50_ids.tsv`](../eval/queries/shopping_sensitivity_50_ids.tsv))
+  is additionally scored to check the stability of the step-match ordering across scales; it
+  is extracted from the same completed runs, not run separately, so no system is measured on
+  data another system did not see.
   `step-match%` = exact-ASIN match per step; `SR` requires all 6 steps to hit. Both scales are
   scored and reported, because the ordering is not stable between them and neither spread is
   larger than the sample resolves — the shopping column should be read as "no system separates
@@ -171,6 +173,6 @@ files (zero deviation on deterministic tasks, <1pp on LLM-judged tasks):
 - multi-hop retrieval — `web_ps_score.py` / `evaluate_with_openai.py` (gpt-5-mini judge).
 
 Denominators: math / physics fixed at 40 / 20 papers; travel on 30 groups / 208 members;
-shopping on the 50-bundle / 300-step subset described above (the full 150-bundle values are
+shopping on the complete 150-bundle / 900-step set (the 50-bundle sensitivity values are
 given alongside it); multi-hop retrieval on the controlled n=20 scale for all four systems,
 with `PS` on the all-slots denominator (the separate n=221 check covers MemoryLake only).
