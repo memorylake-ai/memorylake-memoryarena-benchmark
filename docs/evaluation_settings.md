@@ -37,7 +37,7 @@ ordered sequence of interdependent subtasks; memory accumulates and transfers kn
 | Formal reasoning · physics | `formal_reasoning_phys`, `test` | **20 papers / 86 subproblems** (full) | [`../eval/queries/formal_reasoning_phys_ids.tsv`](../eval/queries/formal_reasoning_phys_ids.tsv) |
 | Group travel planning | `group_travel_planner` (TravelPlanner) | **30 groups / 208 member problems** — fixed-ID list, identical across all four systems (of 270 groups) | [`../eval/queries/travel_query_ids.tsv`](../eval/queries/travel_query_ids.tsv) |
 | Bundled web shopping | `bundled_shopping` (WebShop) | **50 bundles / 300 steps** — first 10 of each of 5 categories, extracted from the completed 150-bundle runs of all four systems | [`../eval/queries/shopping_task_ids.tsv`](../eval/queries/shopping_task_ids.tsv) |
-| Progressive multi-hop retrieval | BrowseComp-Plus | **20 queries / 142 sub-queries** — fixed subset, all four systems | [`../eval/queries/web_search_controlled_20_ids.tsv`](../eval/queries/web_search_controlled_20_ids.tsv) |
+| Progressive multi-hop retrieval | BrowseComp-Plus | **20 queries / 142 slots** (122 sub-queries + 20 final combined queries) — fixed subset, all four systems | [`../eval/queries/web_search_controlled_20_ids.tsv`](../eval/queries/web_search_controlled_20_ids.tsv) |
 
 ## Per-task notes
 
@@ -76,7 +76,8 @@ ordered sequence of interdependent subtasks; memory accumulates and transfers kn
   (1/150 = 0.7%), so on this task only `step-match%` carries any signal at all.
 - **Progressive multi-hop retrieval** — corpus of 100,195 documents (FAISS, text-embedding-3-small
   vectors); of 830 ground-truth queries, 221 carry progressive sub-query decompositions
-  (1,641 sub-queries; the original paper cites 256). Each query's sub-queries are answered
+  (1,641 slots = 1,420 sub-queries + 221 final combined queries; the original paper cites 256
+  decompositions). Each query's sub-queries are answered
   in order and written to memory; the final combined query is answered with all accumulated
   memory. `SR` = correctness of the final query; `PS` = accuracy over answered sub-queries.
   The **controlled four-system comparison uses a fixed 20-query / 142-sub-query subset**
@@ -127,7 +128,10 @@ ordered sequence of interdependent subtasks; memory accumulates and transfers kn
      `S_q = len(question)`, and in the dataset `question[0..N-2]` are the sub-queries while
      `question[-1]` is the final combined query. So the controlled subset's **142 slots are
      122 sub-queries + 20 final queries**, and the full set's **1,641 slots are 1,420 + 221**.
-     Neither figure is a count of sub-queries alone.
+     Neither figure is a count of sub-queries alone. The `num_subqueries` column in
+     [`../eval/queries/web_search_memorylake_221_ids.tsv`](../eval/queries/web_search_memorylake_221_ids.tsv)
+     is this slot count too, despite its name — the column is kept as published so existing
+     readers of the manifest do not break.
   2. **The final query is inside `PS`.** `web_ps_score.py` adds it to both *p_q* and *a_q*.
      `PS` and `SR` therefore share an item and are not independent measures of "process" and
      "outcome".
@@ -157,7 +161,7 @@ ordered sequence of interdependent subtasks; memory accumulates and transfers kn
 ## MemoryLake-only robustness check (not part of the four-system comparison)
 
 As a sample-size robustness check on the 20-query estimate, MemoryLake **alone** was
-additionally run on the **full 221 progressive queries (1,641 sub-queries)**; its scores
+additionally run on the **full 221 progressive queries (1,641 slots)**; its scores
 are consistent with the 20-query subset. This check does **not** include the three
 baselines and supports no claim about relative standing at n=221. Manifest:
 [`../eval/queries/web_search_memorylake_221_ids.tsv`](../eval/queries/web_search_memorylake_221_ids.tsv).
