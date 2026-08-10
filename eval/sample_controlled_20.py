@@ -4,7 +4,7 @@
 The subset is a deterministic proportional stratified sample — there is no random seed:
 
   1. stratify the 221 progressively-decomposed queries by **decomposition depth**
-     (`num_subqueries` = sub-queries plus the final combined query);
+     (`num_slots` = sub-queries plus the final combined query);
   2. give each stratum a quota of `round(stratum_size * k / 221)`;
   3. within a stratum, take the lowest query ids.
 
@@ -17,7 +17,7 @@ offline against files in this repository; the raw BrowseComp-Plus dataset is not
 
     usage: sample_controlled_20.py [-k 20] [--tsv] [--verify]
 
-    --tsv     emit the manifest format (query_id, num_subqueries), sorted by id
+    --tsv     emit the manifest format (query_id, num_slots), sorted by id
     --verify  compare against queries/web_search_controlled_20_ids.tsv, exit 1 on mismatch
 
 Note on provenance: the original selection script was not preserved. This rule was recovered
@@ -62,7 +62,7 @@ picked.sort(key=lambda t: (t[0], int(t[1])))       # by depth, then id
 by_id = sorted((q for _, q in picked), key=int)
 
 if "--tsv" in sys.argv:
-    print("query_id\tnum_subqueries")
+    print("query_id\tnum_slots")
     for q in by_id:
         print(f"{q}\t{depth[q]}")
     sys.exit(0)
