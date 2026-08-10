@@ -49,11 +49,11 @@ Base model, per-task samples, metrics and denominators:
   its advantage is largest on workloads with recognizable structure.
 - Its largest success-rate gain appears where dependency chains are short and reuse must be
   exact — **physics reasoning: SR 60.0% vs 45.0%** for the runner-up long-context baseline.
-- **PS and SR do not always move together.** On progressive multi-hop retrieval the
-  process-level gap over the strongest baseline is about a point (**PS 6.7% vs 5.6%**) while
-  the final-success gap is tenfold larger (**SR 20.0% vs 10.0%**). A small process-level gap
-  can hide a much larger gap in final success — the reverse of what a process-level comparison
-  alone would suggest.
+- **PS and SR do not always move together — on multi-hop retrieval they invert.** Mem0 gets more
+  sub-queries right (13 vs 9 correct; **PS 8.9% vs 6.7%**) yet reaches the correct final answer
+  less often (**SR 15.0% vs 20.0%**). Ranking on process-level completeness would have picked
+  the system that finishes fewer tasks — which is why both are reported here and why the
+  outcome measure is the one conclusions are drawn from.
 - **The clear exception is group travel planning**, a workload dominated by high-volume,
   homogeneous verbatim replay, where full verbatim context beats every memory representation
   (**SPS 53.1% vs 43.0%**).
@@ -78,12 +78,13 @@ with the exact items in [`eval/queries/`](eval/queries/) and the per-item scores
 
 > **On the multi-hop numbers.** `PS` is quoted on the all-slots denominator, which is the one
 > comparable across systems: the benchmark's scorer skips unanswered sub-query slots rather
-> than scoring them 0, and slot coverage ranged from 22.5% to 94.4% here. Mem0's multi-hop
-> figures (`PS` 1.9%, `SR` 0.0%) are reported for completeness but are **not** a capability
-> estimate — it answered only 22.5% of slots and reached the final query on 0 of 20 tasks
-> because its cloud API rejects the oversized memory writes the environment issues. See the
-> coverage table and reproducibility notes in
-> [`docs/evaluation_settings.md`](docs/evaluation_settings.md).
+> than scoring them 0, so a system that answers fewer of them is otherwise measured on an
+> easier denominator. Mem0 runs with a memory-write size cap, because the unmodified
+> environment issues writes its cloud API rejects and Mem0 then never reaches the final query
+> on any task — its uncapped `SR` of 0.0% measures the harness, not the memory system. The
+> other three systems run unmodified. See
+> [`docs/evaluation_settings.md`](docs/evaluation_settings.md) and
+> [`eval/results/mem0_write_limit.md`](eval/results/mem0_write_limit.md).
 
 ## Documentation
 

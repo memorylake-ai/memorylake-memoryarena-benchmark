@@ -59,21 +59,11 @@ ordered sequence of interdependent subtasks; memory accumulates and transfers kn
   — so that the shopping sample is the same order of magnitude as the travel (30 groups) and
   multi-hop (20 queries) samples. The subset is *extracted from the completed 150-bundle runs*,
   not run separately, so no system is measured on data another system did not see.
-  `step-match%` = exact-ASIN match per step; `SR` requires all 6 steps to hit.
-  Per-bundle numbers: [`../eval/results/per_item_scores.md`](../eval/results/per_item_scores.md).
-
-  | system | 50-bundle subset | full 150-bundle set |
-  |---|---|---|
-  | text-embedding | **31.00%** (93/300) | 29.67% (267/900) |
-  | MemoryLake | 30.00% (90/300) | 29.56% (266/900) |
-  | Long Context | 28.33% (85/300) | **30.00%** (270/900) |
-  | Mem0 | 24.00% (72/300) | 24.33% (219/900) |
-
-  **The ordering is not stable between the two scales**: the three leading systems span 2.7pp
-  at n=50 and 0.4pp at n=900, both well inside what these sample sizes can resolve. Read the
-  shopping column as "no system separates from the others", not as a ranking. `SR` is 0/50 for
-  every system on the subset, and 0/150 on the full set for every system except Long Context
-  (1/150 = 0.7%), so on this task only `step-match%` carries any signal at all.
+  `step-match%` = exact-ASIN match per step; `SR` requires all 6 steps to hit. Both scales are
+  scored and reported, because the ordering is not stable between them and neither spread is
+  larger than the sample resolves — the shopping column should be read as "no system separates
+  from the others", not as a ranking. Scores at both scales, per bundle and in aggregate:
+  [`../eval/results/per_item_scores.md`](../eval/results/per_item_scores.md).
 - **Progressive multi-hop retrieval** — corpus of 100,195 documents (FAISS, text-embedding-3-small
   vectors); of 830 ground-truth queries, 221 carry progressive sub-query decompositions
   (1,641 slots = 1,420 sub-queries + 221 final combined queries; the original paper cites 256
@@ -86,7 +76,7 @@ ordered sequence of interdependent subtasks; memory accumulates and transfers kn
   **How that subset is drawn.** It is a deterministic **proportional stratified sample on
   decomposition depth** — no random seed is involved:
 
-  1. stratify the 221 decomposed queries by depth (`num_subqueries`, i.e. sub-queries plus the
+  1. stratify the 221 decomposed queries by depth (`num_slots`, i.e. sub-queries plus the
      final combined query);
   2. quota per stratum = `round(stratum_size × 20 / 221)`;
   3. within a stratum, take the lowest query ids.
@@ -128,10 +118,9 @@ ordered sequence of interdependent subtasks; memory accumulates and transfers kn
      `S_q = len(question)`, and in the dataset `question[0..N-2]` are the sub-queries while
      `question[-1]` is the final combined query. So the controlled subset's **142 slots are
      122 sub-queries + 20 final queries**, and the full set's **1,641 slots are 1,420 + 221**.
-     Neither figure is a count of sub-queries alone. The `num_subqueries` column in
-     [`../eval/queries/web_search_memorylake_221_ids.tsv`](../eval/queries/web_search_memorylake_221_ids.tsv)
-     is this slot count too, despite its name — the column is kept as published so existing
-     readers of the manifest do not break.
+     Neither figure is a count of sub-queries alone. The manifests carry this slot count in
+     their `num_slots` column (renamed from `num_subqueries`, which described its contents
+     incorrectly; the values are unchanged).
   2. **The final query is inside `PS`.** `web_ps_score.py` adds it to both *p_q* and *a_q*.
      `PS` and `SR` therefore share an item and are not independent measures of "process" and
      "outcome".
@@ -142,21 +131,18 @@ ordered sequence of interdependent subtasks; memory accumulates and transfers kn
   the agent exhausts its search-iteration budget without emitting one; `web_ps_score.py`
   skips such slots (`if not pred: continue`) rather than scoring them 0, so its `PS`
   denominator is *answered* slots and a system that answers fewer slots is measured on an
-  easier denominator. We therefore report both denominators plus coverage:
+  easier denominator. **Cross-system `PS` comparisons on this task therefore use the all-slots
+  denominator**, and coverage is reported next to `PS` wherever it appears. Both denominators
+  and per-query numbers:
+  [`../eval/results/per_item_scores.md`](../eval/results/per_item_scores.md).
 
-  | system | slot coverage | `PS` (answered denom.) | `PS` (all-slots denom.) | `SR` |
-  |---|---|---|---|---|
-  | MemoryLake | 133/142 = 93.7% | 6.7% | **6.7%** | **20.0%** (4/20) |
-  | Mem0 | 32/142 = **22.5%** | 3.3% | 1.9% | 0.0% (0/20) |
-  | text-embedding | 92/142 = **64.8%** | *8.2%* | 5.6% | 10.0% (2/20) |
-  | Long Context | 134/142 = 94.4% | 6.0% | 5.3% | 10.0% (2/20) |
-
-  Under the answered-slot denominator text-embedding's 8.2% is the highest `PS`, but it
-  answers only 64.8% of slots; under the all-slots denominator the ordering matches `SR`.
-  **Cross-system `PS` comparisons on this task should use the all-slots denominator.**
-  Mem0's 22.5% coverage is low enough that neither of its `PS` figures should be read as a
-  capability estimate — see the reproducibility note on its memory-write size limit.
-  Per-query numbers: [`../eval/results/per_item_scores.md`](../eval/results/per_item_scores.md).
+  **Mem0 runs with a memory-write size cap.** The unmodified environment writes the full agent
+  trace into memory after every sub-query, which the Mem0 cloud API rejects above 100k tokens;
+  without a cap Mem0 aborts before the final query on all 20 tasks and its `SR` measures the
+  harness rather than the memory system. The comparison therefore uses the capped re-run, which
+  brings Mem0's slot coverage into the same range as the other three systems. The other three
+  run unmodified. Patch, diagnosis and both runs:
+  [`../eval/results/mem0_write_limit.md`](../eval/results/mem0_write_limit.md).
 
 ## MemoryLake-only robustness check (not part of the four-system comparison)
 
@@ -167,18 +153,12 @@ baselines and supports no claim about relative standing at n=221. Manifest:
 [`../eval/queries/web_search_memorylake_221_ids.tsv`](../eval/queries/web_search_memorylake_221_ids.tsv).
 
 Slots left unanswered by an exhausted search-iteration budget were re-run and merged
-(original answers kept; a re-run answer is used only where the original produced none):
-
-| n=221 | slot coverage | `PS` (answered denom.) | `PS` (all-slots denom.) | `SR` |
-|---|---|---|---|---|
-| before re-run | 1315/1641 = 80.1% | 11.8% | 9.7% | 16.7% (37/221) |
-| **after re-run** | **1538/1641 = 93.7%** | 13.4% | **12.3%** | **26.7%** (59/221) |
-
-The re-run raises coverage to exactly the level of the controlled 20-query subset (93.7%),
-so the robustness check and the four-system comparison now rest on the same coverage.
-The remaining 103 unanswered slots (6.3%) are cases where the agent reached its iteration
-cap without emitting an answer — re-running does not recover them (see reproducibility
-notes). Per-query numbers: [`../eval/results/per_item_scores.md`](../eval/results/per_item_scores.md).
+(original answers kept; a re-run answer is used only where the original produced none), which
+raises coverage to the same level as the controlled 20-query subset so that the two rest on
+the same footing. The remaining unanswered slots are cases where the agent reached its
+iteration cap without emitting an answer; re-running does not recover them. Both the
+before-merge and after-merge scores:
+[`../eval/results/per_item_scores.md`](../eval/results/per_item_scores.md).
 
 ## Scoring
 
