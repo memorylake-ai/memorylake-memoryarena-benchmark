@@ -49,11 +49,11 @@ Base model, per-task samples, metrics and denominators:
   its advantage is largest on workloads with recognizable structure.
 - Its largest success-rate gain appears where dependency chains are short and reuse must be
   exact — **physics reasoning: SR 60.0% vs 45.0%** for the runner-up long-context baseline.
-- **PS and SR do not always move together — on multi-hop retrieval they invert.** Mem0 answers
-  more sub-queries correctly (**PS 8.9% vs 6.7%**) yet reaches the correct final answer less
-  often (**SR 15.0% vs 20.0%**). Ranking by process-level completeness would have picked the
-  system that finishes fewer tasks, which is the case for reporting both and deciding on the
-  outcome.
+- **PS and SR do not always move together — on multi-hop retrieval they invert.** Mem0 gets more
+  sub-queries right (13 vs 9 correct; **PS 8.9% vs 6.7%**) yet reaches the correct final answer
+  less often (**SR 15.0% vs 20.0%**). Ranking on process-level completeness would have picked
+  the system that finishes fewer tasks — which is why both are reported here and why the
+  outcome measure is the one conclusions are drawn from.
 - **The clear exception is group travel planning**, a workload dominated by high-volume,
   homogeneous verbatim replay, where full verbatim context beats every memory representation
   (**SPS 53.1% vs 43.0%**).

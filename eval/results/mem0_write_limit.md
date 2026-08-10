@@ -77,8 +77,9 @@ future change in either tokenizer or limit.
 | **overall content retained** | **3,304,763 / 10,906,240 tokens = 30.3%** |
 | limit rejections during the run | **0** (60 env-side 500s before) |
 
-So Mem0 receives roughly **the first third of each trace**. That is the sense in which these
-scores are a modified baseline.
+So Mem0 receives roughly **the first third of each trace**. That is the precise sense in which
+Mem0's cell is not resource-matched to the other three: it is scored on less input, not on a
+different metric.
 
 ## Result
 
