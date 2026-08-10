@@ -18,6 +18,34 @@ uncapped run never reaches the final query (see
 - Progressive multi-hop retrieval — controlled 20 queries
 - Progressive multi-hop retrieval — MemoryLake n=221 robustness check
 
+## All tasks, all systems
+
+Each cell is `process metric / SR`. The process metric differs by task — the column header
+names it — so read down a row, not across one. Every figure here is the aggregate of the
+per-item table in the corresponding section below.
+
+| Task | Process / outcome | MemoryLake | Mem0 | text-embedding | Long Context |
+|---|---|---|---|---|---|
+| Formal reasoning · math (40 papers) | PS / SR | **29.5** / **22.5** | 28.4 / 20.0 | 28.9 / 17.5 | 27.6 / 12.5 |
+| Formal reasoning · physics (20 papers) | PS / SR | **64.5** / **60.0** | 45.9 / 30.0 | 57.4 / 40.0 | 59.1 / 45.0 |
+| Group travel planning (30 groups) | SPS / SR | 43.0 / 0.0 | 27.2 / 0.0 | 45.7 / 0.0 | **53.1** / 0.0 |
+| Bundled web shopping (50 bundles) | step-match / SR | 30.0 / 0.0 | 24.0 / 0.0 | **31.0** / 0.0 | 28.3 / 0.0 |
+| Progressive multi-hop (20 queries) | PS / SR | 6.7 / **20.0** | **8.9** / 15.0 | 5.6 / 10.0 | 5.3 / 10.0 |
+
+Four things this table is easy to over-read:
+
+1. **Multi-hop `PS` is on the all-slots denominator**, and Mem0's cell comes from the capped
+   re-run — it is the only system that ran with an environment modification
+   ([`mem0_write_limit.md`](mem0_write_limit.md)).
+2. **Shopping does not separate the systems.** The four span 7pp with `SR` at zero for all of
+   them, and on the full 150-bundle set the order differs (Long Context 30.0, text-embedding
+   29.7, MemoryLake 29.6, Mem0 24.3). Neither ordering is a ranking.
+3. **Travel and shopping have zero `SR` for every system**, so on those two rows only the
+   process metric carries information, and no system is shown to complete the task.
+4. **`PS` and `SR` invert on multi-hop** — Mem0 leads the process metric while MemoryLake
+   leads the outcome. This is the one row where picking by process-level completeness would
+   pick the system that finishes fewer tasks.
+
 ---
 
 ## Formal reasoning · math — per-paper breakdown (40 papers)
