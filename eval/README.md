@@ -60,7 +60,7 @@ with `MEMORYARENA_ROOT` if yours is elsewhere. `web_ps_score.py` calls an LLM ju
 JUDGE_MODEL=gpt-5-mini python eval/web_ps_score.py <run_dir>
 
 # restrict to the controlled 20-query subset
-WEB_ONLY_IDS="$(paste -sd, eval/queries/web_search_controlled_20_ids.tsv)" \
+WEB_ONLY_IDS="$(tail -n +2 eval/queries/web_search_controlled_20_ids.tsv | cut -f1 | paste -sd, -)" \
   python eval/web_ps_score.py <run_dir>
 
 # coverage + both PS denominators, from the cache (no LLM calls)
