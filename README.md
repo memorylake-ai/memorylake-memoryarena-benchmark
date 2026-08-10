@@ -1,9 +1,9 @@
 # MemoryArena Benchmark with MemoryLake
 
-Companion release for ***Workload-Dependent Returns to Memory Representation Structure: A
-Controlled Study on MemoryArena*** — evaluation settings, task-sampling manifests, and
-protocol documentation for a controlled comparison of four agent memory systems across all
-five MemoryArena task domains.
+Companion release for ***MemoryLake on MemoryArena: A Matched Study of Agent Memory
+Backends*** — evaluation settings, task-sampling manifests, and protocol documentation for a
+matched system-level comparison of four agent memory backends across all five MemoryArena
+task domains.
 
 ## Why this study
 
@@ -22,9 +22,12 @@ and a **Success Rate (SR)** for whether the task's actual goal was reached.
 
 This project asks what those two measures are usually assumed to answer together: **across
 task domains, when does a memory representation's process-level completeness predict its
-practical outcome, and when does it not?** We answer it with a **single-variable controlled
+practical outcome, and when does it not?** We answer it with a **matched system-level
 comparison** — one agent framework, one base model, one batch of task samples, one scoring
-protocol, with the **memory layer as the only experimental variable**:
+protocol, with the **memory backend as the intentionally changed component**. A backend is not
+a single variable: swapping it also changes write policy, retrieval, consolidation, prompt
+assembly and fallback behaviour at once, so what is measured is the effect of a complete
+backend configuration, not of representation structure in isolation:
 
 - **MemoryLake** — structured multi-track memory (confirmed conclusions, supporting
   evidence, reusable skills, each under a different presence policy) →
@@ -41,27 +44,46 @@ Base model, per-task samples, metrics and denominators:
 
 ## Headline findings
 
-- **Structured multi-track memory attains the best result on the primary metric of four of
-  the five tasks**, with its advantage largest on workloads with recognizable structure.
+- **Structured multi-track memory attains the best result on the primary metric of three of
+  the five tasks** — both formal-reasoning domains and progressive multi-hop retrieval — and
+  its advantage is largest on workloads with recognizable structure.
 - Its largest success-rate gain appears where dependency chains are short and reuse must be
   exact — **physics reasoning: SR 60.0% vs 45.0%** for the runner-up long-context baseline.
 - **PS and SR do not always move together.** On progressive multi-hop retrieval the
-  process-level gap among memory-augmented systems is small (**PS 8.9% vs 7.2% and 7.8%**)
-  while final-success differences are large (**SR 23.5% vs 12.5% and 0%**). A small
-  process-level gap can hide a much larger gap in final success — the reverse of what a
-  process-level comparison alone would suggest.
+  process-level gap over the strongest baseline is about a point (**PS 6.7% vs 5.6%**) while
+  the final-success gap is tenfold larger (**SR 20.0% vs 10.0%**). A small process-level gap
+  can hide a much larger gap in final success — the reverse of what a process-level comparison
+  alone would suggest.
 - **The clear exception is group travel planning**, a workload dominated by high-volume,
-  homogeneous verbatim replay, where full verbatim context outperforms every memory
-  representation.
+  homogeneous verbatim replay, where full verbatim context beats every memory representation
+  (**SPS 53.1% vs 43.0%**).
+- **Bundled web shopping separates no system at all.** On the 50-bundle subset the top three
+  span 2.7pp (text-embedding 31.0%, MemoryLake 30.0%, long context 28.3%); on the full
+  150-bundle set they span 0.4pp *in a different order* (long context 30.0%, text-embedding
+  29.7%, MemoryLake 29.6%). An ordering that flips with the sample is not a finding, and we
+  do not read one from it.
 
 Together: **memory representation structure should be matched to the structure of the
 workload it serves, and that match should be validated against task outcomes (SR) rather
-than process-level completeness (PS) alone.**
+than process-level completeness (PS) alone.** Structure pays off where later steps depend on
+earlier conclusions, does not pay off on the replay-dominated workload, and is untestable on
+the one workload where almost nothing succeeds end to end.
 
-The evaluated scale behind each number — including the controlled 20-query multi-hop subset
-and the 50-bundle shopping intersection — is stated in
+The evaluated scale behind each number — the 50-bundle shopping subset and the full
+150-bundle set it is drawn from, the controlled 20-query multi-hop subset and how that
+subset is drawn — is stated in
 [`docs/evaluation_settings.md` § Tasks, datasets and evaluated scale](docs/evaluation_settings.md#tasks-datasets-and-evaluated-scale),
-with the exact items in [`eval/queries/`](eval/queries/).
+with the exact items in [`eval/queries/`](eval/queries/) and the per-item scores in
+[`eval/results/per_item_scores.md`](eval/results/per_item_scores.md).
+
+> **On the multi-hop numbers.** `PS` is quoted on the all-slots denominator, which is the one
+> comparable across systems: the benchmark's scorer skips unanswered sub-query slots rather
+> than scoring them 0, and slot coverage ranged from 22.5% to 94.4% here. Mem0's multi-hop
+> figures (`PS` 1.9%, `SR` 0.0%) are reported for completeness but are **not** a capability
+> estimate — it answered only 22.5% of slots and reached the final query on 0 of 20 tasks
+> because its cloud API rejects the oversized memory writes the environment issues. See the
+> coverage table and reproducibility notes in
+> [`docs/evaluation_settings.md`](docs/evaluation_settings.md).
 
 ## Documentation
 
@@ -109,7 +131,9 @@ Three issues confirmed during reproduction affect how the original benchmark pap
    our absolute scores are not directly comparable to its results table.
 2. The progressive decomposition count measured in the dataset is **221**, not the 256 cited.
 3. On the 20-query multi-hop subset, the reported numbers could not be reproduced with the
-   benchmark's public evaluation method, and no reproducible sampling list is provided.
+   benchmark's public evaluation method, and no reproducible sampling list is provided. Our own
+   subset is drawn by a deterministic rule and can be regenerated offline —
+   [`eval/sample_controlled_20.py --verify`](eval/sample_controlled_20.py).
 
 None of these affect the relative comparison among our four systems, which share identical
 measured data and protocol.
@@ -157,10 +181,10 @@ measurements.
 ## Citation
 
 ```bibtex
-@article{zhan2026workload,
-  title={Workload-Dependent Returns to Memory Representation Structure:
-         A Controlled Study on MemoryArena},
-  author={Zhan, Chaoqun and Zhou, Qiang and Li, Guannan and Wang, Qianjin},
+@article{zhan2026memorylake,
+  title={MemoryLake on MemoryArena: A Matched Study of Agent Memory Backends},
+  author={Zhan, Chaoqun and Zhou, Qiang and Li, Guannan and Huang, Zhenqiang and
+          Wang, Qianjin},
   note={MemoryLake Team},
   year={2026}
 }

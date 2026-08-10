@@ -1,0 +1,59 @@
+--- a/memory/server.py
++++ b/memory/server.py
+@@ -105,10 +105,55 @@
+     return {"status": "ok", "user_id": req.user_id, "memory_system_name": name}
+ 
+ 
++def _tok_cap(chunk: str, cap: int) -> str:
++    """Cap chunk to `cap` o200k tokens (char fallback if tiktoken is unavailable)."""
++    try:
++        import tiktoken
++        enc = tiktoken.get_encoding("o200k_base")
++        tk = enc.encode(chunk, disallowed_special=())
++        if len(tk) <= cap:
++            return chunk
++        return enc.decode(tk[:cap]) + "\n\n[TRACE TRUNCATED: kept %d of %d tokens]" % (cap, len(tk))
++    except Exception:
++        lim = cap * 3
++        return chunk if len(chunk) <= lim else chunk[:lim] + "\n\n[TRACE TRUNCATED]"
++
++
++def _add_with_mem0_cap(memory_system, name, chunk):
++    """PATCH(chaowei 2026-08-04) OPTION B: mem0's cloud API rejects a single add()
++    above 100,000 tokens *by its own tokenizer*, which does NOT match o200k_base
++    (measured: 90k o200k tokens -> mem0 reported 238,335 tokens). browsecomp_plus_env
++    embeds the FULL agent trace in each entry (142k-464k tokens), so every add 400s ->
++    /env/step 500 -> query retried 3x then skipped -- that is why mem0 covered only
++    32/142 slots and reached final_query on 0/20 queries.
++
++    Rather than guessing the ratio, start at MEM_ADD_MAX_TOKENS and halve on each
++    limit rejection until mem0 accepts. Gated on BOTH the memory system name and
++    MEM_ADD_MAX_TOKENS, so every other memory system keeps its exact original input."""
++    cap = int(os.getenv("MEM_ADD_MAX_TOKENS", "0") or 0)
++    if cap <= 0 or name != "mem0":
++        return memory_system.add_chunk(chunk)
++    for attempt in range(7):
++        try:
++            r = memory_system.add_chunk(_tok_cap(chunk, cap))
++            print("[MEMTRUNC] mem0 add OK at cap=%d (attempt %d)" % (cap, attempt + 1), flush=True)
++            return r
++        except Exception as e:
++            msg = str(e)
++            if "exceeds the limit" not in msg and "too large" not in msg.lower():
++                raise
++            if cap <= 2000:
++                print("[MEMTRUNC] still rejected at cap=%d; skipping this add" % cap, flush=True)
++                return {"status": "skipped_oversize"}
++            cap = max(2000, cap // 2)
++            print("[MEMTRUNC] mem0 rejected (%s); halving cap -> %d" % (msg[:100], cap), flush=True)
++    return {"status": "skipped_oversize"}
++
++
+ @app.post("/memory/add")
+ def add(req: AddRequest):
+     memory_system = _get_memory(req.user_id, req.memory_system_name)
+-    response = memory_system.add_chunk(req.chunk)
++    response = _add_with_mem0_cap(memory_system, req.memory_system_name, req.chunk)
+     outputs = {"status": "ok", "user_id": req.user_id}
+     outputs['response'] = response
+     return outputs
