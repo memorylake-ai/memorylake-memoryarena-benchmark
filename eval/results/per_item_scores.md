@@ -5,7 +5,9 @@ result files with the official MemoryArena scoring code.
 
 **Data selection** — where a task was re-run, the newer run is used; bundled web shopping is
 scored on the 50-bundle subset (first 10 per category) extracted from the completed 150-bundle
-runs, with both scales reported; Mem0 progressive multi-hop uses its original run.
+runs, with both scales reported; Mem0 progressive multi-hop uses the capped re-run, since the
+uncapped run never reaches the final query (see
+[`mem0_write_limit.md`](mem0_write_limit.md)).
 
 **Contents**
 
@@ -350,34 +352,33 @@ n=900) is smaller than either sample resolves, so neither ordering should be rea
 
 | query | N | MemoryLake | Mem0 | text-embedding | Long Context |
 |---|---|---|---|---|---|
-| 11 | 6 | 0/4 ✗ | 0/1 ✗ | 0/0 ✗ | 0/5 ✗ |
-| 15 | 4 | 1/4 ✓ | 0/0 ✗ | 1/4 ✗ | 0/3 ✗ |
-| 49 | 7 | 0/7 ✗ | 0/2 ✗ | 1/4 ✗ | 0/7 ✗ |
-| 50 | 7 | 2/7 ✓ | 0/1 ✗ | 2/7 ✓ | 0/7 ✗ |
-| 51 | 8 | 3/8 ✓ | 0/2 ✗ | 1/3 ✗ | 2/7 ✗ |
-| 54 | 7 | 1/7 ✓ | 2/6 ✗ | 1/3 ✗ | 0/7 ✗ |
-| 60 | 10 | 0/10 ✗ | 0/2 ✗ | 0/10 ✗ | 0/10 ✗ |
-| 67 | 8 | 0/8 ✗ | 0/1 ✗ | 0/8 ✗ | 1/8 ✓ |
-| 107 | 7 | 0/7 ✗ | 0/1 ✗ | 0/6 ✗ | 2/6 ✗ |
-| 121 | 6 | 0/5 ✗ | 0/1 ✗ | 0/1 ✗ | 0/6 ✗ |
-| 124 | 6 | 0/3 ✗ | 0/0 ✗ | 0/2 ✗ | 0/5 ✗ |
-| 126 | 9 | 0/8 ✗ | 0/3 ✗ | 0/9 ✗ | 0/9 ✗ |
-| 130 | 5 | 0/5 ✗ | 0/2 ✗ | 0/2 ✗ | 0/5 ✗ |
-| 131 | 8 | 0/8 ✗ | 0/1 ✗ | 0/3 ✗ | 0/8 ✗ |
-| 132 | 9 | 0/8 ✗ | 0/0 ✗ | 0/0 ✗ | 1/8 ✗ |
-| 149 | 5 | 1/5 ✗ | 0/3 ✗ | 0/5 ✗ | 0/5 ✗ |
-| 160 | 6 | 0/6 ✗ | 0/1 ✗ | 0/6 ✗ | 0/6 ✗ |
-| 165 | 5 | 0/4 ✗ | 0/1 ✗ | 0/1 ✗ | 1/4 ✓ |
-| 175 | 8 | 0/8 ✗ | 0/1 ✗ | 0/7 ✗ | 0/7 ✗ |
-| 180 | 11 | 1/11 ✗ | 1/3 ✗ | 2/11 ✓ | 1/11 ✗ |
+| 11 | 6 | 0/4 ✗ | 0/6 ✗ | 0/0 ✗ | 0/5 ✗ |
+| 15 | 4 | 1/4 ✓ | 1/2 ✗ | 1/4 ✗ | 0/3 ✗ |
+| 49 | 7 | 0/7 ✗ | 0/7 ✗ | 1/4 ✗ | 0/7 ✗ |
+| 50 | 7 | 2/7 ✓ | 2/6 ✓ | 2/7 ✓ | 0/7 ✗ |
+| 51 | 8 | 3/8 ✓ | 2/7 ✓ | 1/3 ✗ | 2/7 ✗ |
+| 54 | 7 | 1/7 ✓ | 3/7 ✗ | 1/3 ✗ | 0/7 ✗ |
+| 60 | 10 | 0/10 ✗ | 0/10 ✗ | 0/10 ✗ | 0/10 ✗ |
+| 67 | 8 | 0/8 ✗ | 0/6 ✗ | 0/8 ✗ | 1/8 ✓ |
+| 107 | 7 | 0/7 ✗ | 1/7 ✗ | 0/6 ✗ | 2/6 ✗ |
+| 121 | 6 | 0/5 ✗ | 0/5 ✗ | 0/1 ✗ | 0/6 ✗ |
+| 124 | 6 | 0/3 ✗ | 0/2 ✗ | 0/2 ✗ | 0/5 ✗ |
+| 126 | 9 | 0/8 ✗ | 0/9 ✗ | 0/9 ✗ | 0/9 ✗ |
+| 130 | 5 | 0/5 ✗ | 0/3 ✗ | 0/2 ✗ | 0/5 ✗ |
+| 131 | 8 | 0/8 ✗ | 0/7 ✗ | 0/3 ✗ | 0/8 ✗ |
+| 132 | 9 | 0/8 ✗ | 0/6 ✗ | 0/0 ✗ | 1/8 ✗ |
+| 149 | 5 | 1/5 ✗ | 0/5 ✗ | 0/5 ✗ | 0/5 ✗ |
+| 160 | 6 | 0/6 ✗ | 0/4 ✗ | 0/6 ✗ | 0/6 ✗ |
+| 165 | 5 | 0/4 ✗ | 0/3 ✗ | 0/1 ✗ | 1/4 ✓ |
+| 175 | 8 | 0/8 ✗ | 2/8 ✓ | 0/7 ✗ | 0/7 ✗ |
+| 180 | 11 | 1/11 ✗ | 2/10 ✗ | 2/11 ✓ | 1/11 ✗ |
 
 | system | slot coverage | PS lenient | PS strict | SR |
 |---|---|---|---|---|
 | MemoryLake | 133/142 = 93.7% | 6.7% | 6.7% | 20.0% (4/20) |
-| Mem0 | 32/142 = 22.5% | 3.3% | 1.9% | 0.0% (0/20) |
+| Mem0 (capped re-run) | 120/142 = 84.5% | 10.7% | 8.9% | 15.0% (3/20) |
 | text-embedding | 92/142 = 64.8% | 8.2% | 5.6% | 10.0% (2/20) |
 | Long Context | 134/142 = 94.4% | 6.0% | 5.3% | 10.0% (2/20) |
-
 
 ## Progressive multi-hop retrieval — MemoryLake n=221 robustness check
 

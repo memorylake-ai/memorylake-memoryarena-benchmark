@@ -17,10 +17,9 @@ described; storage, indexing, consolidation, and assembly are proprietary).
   policies).
 - [`evaluation_settings.md`](evaluation_settings.md) — the four systems, base model,
   per-task datasets, evaluated scale, and scoring.
-- [`../eval/queries/`](../eval/queries/) — the exact items evaluated per task:
-  - [`formal_reasoning_math_ids.tsv`](../eval/queries/formal_reasoning_math_ids.tsv) — 40 papers (`id`, `paper_name`, `num_questions`)
-  - [`formal_reasoning_phys_ids.tsv`](../eval/queries/formal_reasoning_phys_ids.tsv) — 20 papers
-  - [`travel_query_ids.tsv`](../eval/queries/travel_query_ids.tsv) — 30 groups (`id`; fixed-ID subset of 270)
-  - [`shopping_task_ids.tsv`](../eval/queries/shopping_task_ids.tsv) — 150 bundles (`category`, `task_file`); all four systems completed the full set, so the cross-system comparison is scored on all 150
-  - [`web_search_controlled_20_ids.tsv`](../eval/queries/web_search_controlled_20_ids.tsv) — 20 queries (`query_id`, `num_slots`); the controlled four-system multi-hop subset
-  - [`web_search_memorylake_221_ids.tsv`](../eval/queries/web_search_memorylake_221_ids.tsv) — 221 queries; MemoryLake-only robustness check (not part of the four-system comparison)
+- [`../eval/queries/`](../eval/queries/) — one manifest per task, listing the exact items
+  evaluated. Which manifest belongs to which task, and the sample size behind each, are in
+  [`evaluation_settings.md` § Tasks, datasets and evaluated scale](evaluation_settings.md#tasks-datasets-and-evaluated-scale)
+  rather than repeated here.
+- [`../eval/results/per_item_scores.md`](../eval/results/per_item_scores.md) — the per-item
+  scores behind every published number.

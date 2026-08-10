@@ -1,13 +1,15 @@
 # Mem0's per-write size limit on progressive multi-hop retrieval
 
-Supporting evidence for the reproducibility note that **Mem0's `SR` of 0.0% on this task
-reflects never reaching the final query, not answering it incorrectly.**
+Why the four-system comparison scores Mem0 from a **capped re-run**, and what the cap changes.
+Uncapped, **Mem0's `SR` of 0.0% reflects never reaching the final query, not answering it
+incorrectly** — so it measures the harness rather than the memory system.
 
-> ⚠️ **Not part of the four-system comparison.** The measurement below required a code change
-> that no other system received, so its scores are a *modified* baseline and are reported here
-> only to identify the cause. The comparison in
-> [`../../docs/evaluation_settings.md`](../../docs/evaluation_settings.md) uses Mem0's original,
-> unmodified run.
+> ⚠️ **Mem0 is the only system that runs modified.** The cap is a code change no other backend
+> received, so Mem0's cell is not resource-matched to the other three; it is gated on
+> `memory_system_name == "mem0"` so nothing else is affected. This is a deliberate trade: the
+> uncapped run cannot be read as a capability estimate at all, while the capped one is
+> comparable on slot coverage (84.5%, against 64.8–94.4% for the others) at the cost of an
+> environment difference that must be stated wherever the number appears.
 
 ## The failure
 
@@ -83,10 +85,11 @@ scores are a modified baseline.
 | | slot coverage | `PS` (answered denom.) | `PS` (all-slots denom.) | `SR` | reached final query |
 |---|---|---|---|---|---|
 | original run | 32/142 = 22.5% | 3.3% | 1.9% | 0.0% (0/20) | **0/20** |
-| with the cap | **120/142 = 84.5%** | 10.7% | **8.9%** | **15.0%** (3/20) | **20/20** |
+| **with the cap** (used in the comparison) | **120/142 = 84.5%** | 10.7% | **8.9%** | **15.0%** (3/20) | **20/20** |
 
-**The diagnostic result is `0/20 → 20/20` reaching the final query**, which settles what the
-0.0% meant. The score movement is a consequence and is not comparable to the other systems.
+**The decisive movement is `0/20 → 20/20` reaching the final query**, which settles what the
+0.0% meant: with the cap Mem0 answers the question the metric asks, without it the metric had
+nothing to score.
 
 Worth noting for its own sake: Mem0 scores *better* on a third of the trace than it did on all
 of it, which suggests writing a verbatim search transcript into memory is not merely wasteful
