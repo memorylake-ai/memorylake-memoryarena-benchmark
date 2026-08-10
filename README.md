@@ -57,11 +57,12 @@ Base model, per-task samples, metrics and denominators:
 - **The clear exception is group travel planning**, a workload dominated by high-volume,
   homogeneous verbatim replay, where full verbatim context beats every memory representation
   (**SPS 53.1% vs 43.0%**).
-- **Bundled web shopping separates no system at all.** On the 50-bundle subset the top three
-  span 2.7pp (text-embedding 31.0%, MemoryLake 30.0%, long context 28.3%); on the full
-  150-bundle set they span 0.4pp *in a different order* (long context 30.0%, text-embedding
-  29.7%, MemoryLake 29.6%). An ordering that flips with the sample is not a finding, and we
-  do not read one from it.
+- **Bundled web shopping separates no system at all.** On the full 150-bundle set — the
+  scored comparison — the top three span 0.4pp (long context 30.0%, text-embedding 29.7%,
+  MemoryLake 29.6%), with the study's single bundle-level success (long context, 1/150); on
+  the 50-bundle sensitivity subset they span 2.7pp *in a different order* (text-embedding
+  31.0%, MemoryLake 30.0%, long context 28.3%). An ordering that flips with the sample is
+  not a finding, and we do not read one from it.
 
 Together: **memory representation structure should be matched to the structure of the
 workload it serves, and that match should be validated against task outcomes (SR) rather
@@ -69,9 +70,9 @@ than process-level completeness (PS) alone.** Structure pays off where later ste
 earlier conclusions, does not pay off on the replay-dominated workload, and is untestable on
 the one workload where almost nothing succeeds end to end.
 
-The evaluated scale behind each number — the 50-bundle shopping subset and the full
-150-bundle set it is drawn from, the controlled 20-query multi-hop subset and how that
-subset is drawn — is stated in
+The evaluated scale behind each number — the full 150-bundle shopping set and the
+50-bundle sensitivity subset drawn from it, the controlled 20-query multi-hop subset and how
+that subset is drawn — is stated in
 [`docs/evaluation_settings.md` § Tasks, datasets and evaluated scale](docs/evaluation_settings.md#tasks-datasets-and-evaluated-scale),
 with the exact items in [`eval/queries/`](eval/queries/) and the per-item scores in
 [`eval/results/per_item_scores.md`](eval/results/per_item_scores.md).
