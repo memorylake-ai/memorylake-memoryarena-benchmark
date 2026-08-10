@@ -3,15 +3,16 @@
 Per-item breakdown behind every number in the four-system comparison, recomputed from raw
 result files with the official MemoryArena scoring code.
 
-**Data selection** — where a task was re-run, the newer run is used; bundled web shopping uses
-the complete 150-bundle set; Mem0 progressive multi-hop uses its original run.
+**Data selection** — where a task was re-run, the newer run is used; bundled web shopping is
+scored on the 50-bundle subset (first 10 per category) extracted from the completed 150-bundle
+runs, with both scales reported; Mem0 progressive multi-hop uses its original run.
 
 **Contents**
 
 - Formal reasoning · math — 40 papers
 - Formal reasoning · physics — 20 papers
 - Group travel planning — 30 groups / 208 members
-- Bundled web shopping — 150 bundles
+- Bundled web shopping — 50-bundle scored subset, drawn from 150-bundle runs
 - Progressive multi-hop retrieval — controlled 20 queries
 - Progressive multi-hop retrieval — MemoryLake n=221 robustness check
 
@@ -152,9 +153,18 @@ Each cell: `members fully passing / members in group` · `SPS%` · `✓/✗` = a
 | Long Context | 30 | 208 | 3.37% (7/208) | 53.12% | 0.00% (0/30) |
 
 
-## Bundled web shopping — per-bundle breakdown (150 bundles, full set)
+## Bundled web shopping — per-bundle breakdown
 
 `matched steps / total steps` (exact-ASIN match), `✓/✗` = all 6 steps hit (SR).
+
+All four systems completed the full released set of 150 bundles. The cross-system comparison
+scores the **first 10 bundles of each category** — the 50 listed in
+[`../queries/shopping_task_ids.tsv`](../queries/shopping_task_ids.tsv) — so that the shopping
+sample is the same order of magnitude as travel (30 groups) and multi-hop (20 queries). Those
+50 are given first; the remaining 100, which the completed runs also cover, follow so the
+subset can be checked against the set it was drawn from.
+
+### The 50 scored bundles (`item_0`–`item_9` of each category)
 
 | bundle | MemoryLake | Mem0 | text-embedding | Long Context |
 |---|---|---|---|---|
@@ -168,6 +178,58 @@ Each cell: `members fully passing / members in group` · `SPS%` · `✓/✗` = a
 | baking/item_7 | 2/6 ✗ | 2/6 ✗ | 2/6 ✗ | 1/6 ✗ |
 | baking/item_8 | 1/6 ✗ | 3/6 ✗ | 1/6 ✗ | 2/6 ✗ |
 | baking/item_9 | 4/6 ✗ | 2/6 ✗ | 4/6 ✗ | 2/6 ✗ |
+| beauty/item_0 | 0/6 ✗ | 1/6 ✗ | 1/6 ✗ | 1/6 ✗ |
+| beauty/item_1 | 1/6 ✗ | 3/6 ✗ | 3/6 ✗ | 3/6 ✗ |
+| beauty/item_2 | 4/6 ✗ | 1/6 ✗ | 3/6 ✗ | 1/6 ✗ |
+| beauty/item_3 | 1/6 ✗ | 1/6 ✗ | 2/6 ✗ | 1/6 ✗ |
+| beauty/item_4 | 3/6 ✗ | 4/6 ✗ | 4/6 ✗ | 5/6 ✗ |
+| beauty/item_5 | 3/6 ✗ | 4/6 ✗ | 4/6 ✗ | 0/6 ✗ |
+| beauty/item_6 | 1/6 ✗ | 3/6 ✗ | 3/6 ✗ | 2/6 ✗ |
+| beauty/item_7 | 2/6 ✗ | 2/6 ✗ | 3/6 ✗ | 5/6 ✗ |
+| beauty/item_8 | 3/6 ✗ | 2/6 ✗ | 2/6 ✗ | 3/6 ✗ |
+| beauty/item_9 | 1/6 ✗ | 2/6 ✗ | 4/6 ✗ | 4/6 ✗ |
+| electronics/item_0 | 0/6 ✗ | 0/6 ✗ | 1/6 ✗ | 0/6 ✗ |
+| electronics/item_1 | 2/6 ✗ | 1/6 ✗ | 1/6 ✗ | 3/6 ✗ |
+| electronics/item_2 | 4/6 ✗ | 2/6 ✗ | 1/6 ✗ | 3/6 ✗ |
+| electronics/item_3 | 0/6 ✗ | 0/6 ✗ | 0/6 ✗ | 1/6 ✗ |
+| electronics/item_4 | 1/6 ✗ | 0/6 ✗ | 1/6 ✗ | 1/6 ✗ |
+| electronics/item_5 | 2/6 ✗ | 1/6 ✗ | 0/6 ✗ | 1/6 ✗ |
+| electronics/item_6 | 1/6 ✗ | 0/6 ✗ | 2/6 ✗ | 0/6 ✗ |
+| electronics/item_7 | 0/6 ✗ | 0/6 ✗ | 0/6 ✗ | 0/6 ✗ |
+| electronics/item_8 | 2/6 ✗ | 0/6 ✗ | 1/6 ✗ | 2/6 ✗ |
+| electronics/item_9 | 3/6 ✗ | 1/6 ✗ | 3/6 ✗ | 2/6 ✗ |
+| grocery/item_0 | 3/6 ✗ | 1/6 ✗ | 0/6 ✗ | 1/6 ✗ |
+| grocery/item_1 | 4/6 ✗ | 2/6 ✗ | 2/6 ✗ | 2/6 ✗ |
+| grocery/item_2 | 3/6 ✗ | 1/6 ✗ | 0/6 ✗ | 2/6 ✗ |
+| grocery/item_3 | 3/6 ✗ | 2/6 ✗ | 1/6 ✗ | 2/6 ✗ |
+| grocery/item_4 | 3/6 ✗ | 0/6 ✗ | 1/6 ✗ | 1/6 ✗ |
+| grocery/item_5 | 0/6 ✗ | 1/6 ✗ | 2/6 ✗ | 2/6 ✗ |
+| grocery/item_6 | 0/6 ✗ | 1/6 ✗ | 1/6 ✗ | 1/6 ✗ |
+| grocery/item_7 | 3/6 ✗ | 2/6 ✗ | 2/6 ✗ | 2/6 ✗ |
+| grocery/item_8 | 2/6 ✗ | 2/6 ✗ | 2/6 ✗ | 1/6 ✗ |
+| grocery/item_9 | 2/6 ✗ | 3/6 ✗ | 4/6 ✗ | 1/6 ✗ |
+| home/item_0 | 0/6 ✗ | 1/6 ✗ | 3/6 ✗ | 0/6 ✗ |
+| home/item_1 | 0/6 ✗ | 1/6 ✗ | 1/6 ✗ | 2/6 ✗ |
+| home/item_2 | 1/6 ✗ | 1/6 ✗ | 1/6 ✗ | 2/6 ✗ |
+| home/item_3 | 0/6 ✗ | 1/6 ✗ | 4/6 ✗ | 2/6 ✗ |
+| home/item_4 | 2/6 ✗ | 1/6 ✗ | 4/6 ✗ | 3/6 ✗ |
+| home/item_5 | 1/6 ✗ | 0/6 ✗ | 2/6 ✗ | 2/6 ✗ |
+| home/item_6 | 2/6 ✗ | 3/6 ✗ | 2/6 ✗ | 1/6 ✗ |
+| home/item_7 | 5/6 ✗ | 1/6 ✗ | 1/6 ✗ | 1/6 ✗ |
+| home/item_8 | 0/6 ✗ | 0/6 ✗ | 2/6 ✗ | 0/6 ✗ |
+| home/item_9 | 2/6 ✗ | 1/6 ✗ | 2/6 ✗ | 3/6 ✗ |
+
+| system | bundles | step-match | SR |
+|---|---|---|---|
+| MemoryLake | 50/50 | 30.00% (90/300) | 0.0% (0/50) |
+| Mem0 | 50/50 | 24.00% (72/300) | 0.0% (0/50) |
+| text-embedding | 50/50 | **31.00%** (93/300) | 0.0% (0/50) |
+| Long Context | 50/50 | 28.33% (85/300) | 0.0% (0/50) |
+
+### The remaining 100 bundles (`item_10`–`item_29`), not scored in the comparison
+
+| bundle | MemoryLake | Mem0 | text-embedding | Long Context |
+|---|---|---|---|---|
 | baking/item_10 | 2/6 ✗ | 2/6 ✗ | 1/6 ✗ | 1/6 ✗ |
 | baking/item_11 | 0/6 ✗ | 1/6 ✗ | 0/6 ✗ | 0/6 ✗ |
 | baking/item_12 | 1/6 ✗ | 1/6 ✗ | 1/6 ✗ | 1/6 ✗ |
@@ -188,16 +250,6 @@ Each cell: `members fully passing / members in group` · `SPS%` · `✓/✗` = a
 | baking/item_27 | 3/6 ✗ | 2/6 ✗ | 1/6 ✗ | 1/6 ✗ |
 | baking/item_28 | 0/6 ✗ | 0/6 ✗ | 1/6 ✗ | 1/6 ✗ |
 | baking/item_29 | 3/6 ✗ | 1/6 ✗ | 1/6 ✗ | 2/6 ✗ |
-| beauty/item_0 | 0/6 ✗ | 1/6 ✗ | 1/6 ✗ | 1/6 ✗ |
-| beauty/item_1 | 1/6 ✗ | 3/6 ✗ | 3/6 ✗ | 3/6 ✗ |
-| beauty/item_2 | 4/6 ✗ | 1/6 ✗ | 3/6 ✗ | 1/6 ✗ |
-| beauty/item_3 | 1/6 ✗ | 1/6 ✗ | 2/6 ✗ | 1/6 ✗ |
-| beauty/item_4 | 3/6 ✗ | 4/6 ✗ | 4/6 ✗ | 5/6 ✗ |
-| beauty/item_5 | 3/6 ✗ | 4/6 ✗ | 4/6 ✗ | 0/6 ✗ |
-| beauty/item_6 | 1/6 ✗ | 3/6 ✗ | 3/6 ✗ | 2/6 ✗ |
-| beauty/item_7 | 2/6 ✗ | 2/6 ✗ | 3/6 ✗ | 5/6 ✗ |
-| beauty/item_8 | 3/6 ✗ | 2/6 ✗ | 2/6 ✗ | 3/6 ✗ |
-| beauty/item_9 | 1/6 ✗ | 2/6 ✗ | 4/6 ✗ | 4/6 ✗ |
 | beauty/item_10 | 3/6 ✗ | 3/6 ✗ | 4/6 ✗ | 1/6 ✗ |
 | beauty/item_11 | 5/6 ✗ | 3/6 ✗ | 5/6 ✗ | 5/6 ✗ |
 | beauty/item_12 | 2/6 ✗ | 1/6 ✗ | 2/6 ✗ | 2/6 ✗ |
@@ -218,16 +270,6 @@ Each cell: `members fully passing / members in group` · `SPS%` · `✓/✗` = a
 | beauty/item_27 | 2/6 ✗ | 2/6 ✗ | 2/6 ✗ | 5/6 ✗ |
 | beauty/item_28 | 1/6 ✗ | 1/6 ✗ | 1/6 ✗ | 4/6 ✗ |
 | beauty/item_29 | 1/6 ✗ | 1/6 ✗ | 1/6 ✗ | 0/6 ✗ |
-| electronics/item_0 | 0/6 ✗ | 0/6 ✗ | 1/6 ✗ | 0/6 ✗ |
-| electronics/item_1 | 2/6 ✗ | 1/6 ✗ | 1/6 ✗ | 3/6 ✗ |
-| electronics/item_2 | 4/6 ✗ | 2/6 ✗ | 1/6 ✗ | 3/6 ✗ |
-| electronics/item_3 | 0/6 ✗ | 0/6 ✗ | 0/6 ✗ | 1/6 ✗ |
-| electronics/item_4 | 1/6 ✗ | 0/6 ✗ | 1/6 ✗ | 1/6 ✗ |
-| electronics/item_5 | 2/6 ✗ | 1/6 ✗ | 0/6 ✗ | 1/6 ✗ |
-| electronics/item_6 | 1/6 ✗ | 0/6 ✗ | 2/6 ✗ | 0/6 ✗ |
-| electronics/item_7 | 0/6 ✗ | 0/6 ✗ | 0/6 ✗ | 0/6 ✗ |
-| electronics/item_8 | 2/6 ✗ | 0/6 ✗ | 1/6 ✗ | 2/6 ✗ |
-| electronics/item_9 | 3/6 ✗ | 1/6 ✗ | 3/6 ✗ | 2/6 ✗ |
 | electronics/item_10 | 0/6 ✗ | 1/6 ✗ | 1/6 ✗ | 1/6 ✗ |
 | electronics/item_11 | 4/6 ✗ | 2/6 ✗ | 2/6 ✗ | 1/6 ✗ |
 | electronics/item_12 | 0/6 ✗ | 0/6 ✗ | 0/6 ✗ | 0/6 ✗ |
@@ -248,16 +290,6 @@ Each cell: `members fully passing / members in group` · `SPS%` · `✓/✗` = a
 | electronics/item_27 | 2/6 ✗ | 1/6 ✗ | 1/6 ✗ | 1/6 ✗ |
 | electronics/item_28 | 1/6 ✗ | 1/6 ✗ | 1/6 ✗ | 1/6 ✗ |
 | electronics/item_29 | 1/6 ✗ | 1/6 ✗ | 1/6 ✗ | 1/6 ✗ |
-| grocery/item_0 | 3/6 ✗ | 1/6 ✗ | 0/6 ✗ | 1/6 ✗ |
-| grocery/item_1 | 4/6 ✗ | 2/6 ✗ | 2/6 ✗ | 2/6 ✗ |
-| grocery/item_2 | 3/6 ✗ | 1/6 ✗ | 0/6 ✗ | 2/6 ✗ |
-| grocery/item_3 | 3/6 ✗ | 2/6 ✗ | 1/6 ✗ | 2/6 ✗ |
-| grocery/item_4 | 3/6 ✗ | 0/6 ✗ | 1/6 ✗ | 1/6 ✗ |
-| grocery/item_5 | 0/6 ✗ | 1/6 ✗ | 2/6 ✗ | 2/6 ✗ |
-| grocery/item_6 | 0/6 ✗ | 1/6 ✗ | 1/6 ✗ | 1/6 ✗ |
-| grocery/item_7 | 3/6 ✗ | 2/6 ✗ | 2/6 ✗ | 2/6 ✗ |
-| grocery/item_8 | 2/6 ✗ | 2/6 ✗ | 2/6 ✗ | 1/6 ✗ |
-| grocery/item_9 | 2/6 ✗ | 3/6 ✗ | 4/6 ✗ | 1/6 ✗ |
 | grocery/item_10 | 1/6 ✗ | 0/6 ✗ | 2/6 ✗ | 2/6 ✗ |
 | grocery/item_11 | 0/6 ✗ | 1/6 ✗ | 1/6 ✗ | 2/6 ✗ |
 | grocery/item_12 | 0/6 ✗ | 0/6 ✗ | 0/6 ✗ | 1/6 ✗ |
@@ -278,16 +310,6 @@ Each cell: `members fully passing / members in group` · `SPS%` · `✓/✗` = a
 | grocery/item_27 | 4/6 ✗ | 1/6 ✗ | 3/6 ✗ | 3/6 ✗ |
 | grocery/item_28 | 3/6 ✗ | 2/6 ✗ | 0/6 ✗ | 2/6 ✗ |
 | grocery/item_29 | 2/6 ✗ | 2/6 ✗ | 0/6 ✗ | 2/6 ✗ |
-| home/item_0 | 0/6 ✗ | 1/6 ✗ | 3/6 ✗ | 0/6 ✗ |
-| home/item_1 | 0/6 ✗ | 1/6 ✗ | 1/6 ✗ | 2/6 ✗ |
-| home/item_2 | 1/6 ✗ | 1/6 ✗ | 1/6 ✗ | 2/6 ✗ |
-| home/item_3 | 0/6 ✗ | 1/6 ✗ | 4/6 ✗ | 2/6 ✗ |
-| home/item_4 | 2/6 ✗ | 1/6 ✗ | 4/6 ✗ | 3/6 ✗ |
-| home/item_5 | 1/6 ✗ | 0/6 ✗ | 2/6 ✗ | 2/6 ✗ |
-| home/item_6 | 2/6 ✗ | 3/6 ✗ | 2/6 ✗ | 1/6 ✗ |
-| home/item_7 | 5/6 ✗ | 1/6 ✗ | 1/6 ✗ | 1/6 ✗ |
-| home/item_8 | 0/6 ✗ | 0/6 ✗ | 2/6 ✗ | 0/6 ✗ |
-| home/item_9 | 2/6 ✗ | 1/6 ✗ | 2/6 ✗ | 3/6 ✗ |
 | home/item_10 | 2/6 ✗ | 2/6 ✗ | 3/6 ✗ | 2/6 ✗ |
 | home/item_11 | 3/6 ✗ | 2/6 ✗ | 2/6 ✗ | 0/6 ✗ |
 | home/item_12 | 1/6 ✗ | 0/6 ✗ | 1/6 ✗ | 2/6 ✗ |
@@ -309,12 +331,17 @@ Each cell: `members fully passing / members in group` · `SPS%` · `✓/✗` = a
 | home/item_28 | 2/6 ✗ | 1/6 ✗ | 0/6 ✗ | 2/6 ✗ |
 | home/item_29 | 2/6 ✗ | 3/6 ✗ | 1/6 ✗ | 3/6 ✗ |
 
+Totals over all 150 bundles, for reference:
+
 | system | bundles | step-match | SR |
 |---|---|---|---|
 | MemoryLake | 150/150 | 29.56% (266/900) | 0.0% (0/150) |
 | Mem0 | 150/150 | 24.33% (219/900) | 0.0% (0/150) |
 | text-embedding | 150/150 | 29.67% (267/900) | 0.0% (0/150) |
-| Long Context | 150/150 | 30.00% (270/900) | 0.7% (1/150) |
+| Long Context | 150/150 | **30.00%** (270/900) | 0.7% (1/150) |
+
+The leading system differs between the two scales and the spread (2.7pp at n=300, 0.4pp at
+n=900) is smaller than either sample resolves, so neither ordering should be read as a ranking.
 
 
 ## Progressive multi-hop retrieval — per-query breakdown (controlled 20)

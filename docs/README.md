@@ -1,7 +1,7 @@
 # MemoryLake on MemoryArena — Evaluation Settings
 
 This directory documents **how MemoryLake was evaluated** on the MemoryArena benchmark, as
-a controlled, single-variable comparison against three baselines (Mem0,
+a matched system-level comparison against three baselines (Mem0,
 text-embedding-3-small RAG, and a no-memory Long Context configuration): the datasets and
 evaluated sample sizes, the agent / memory / judge configuration, and a short method
 overview.

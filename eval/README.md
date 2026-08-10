@@ -89,6 +89,21 @@ instead of scoring them 0, so the PS it prints is measured over *answered* slots
 that answers fewer slots is therefore measured on an easier denominator, and slot coverage
 varied more than fourfold across the four systems compared here (22.5% to 94.4%).
 
+With `S_q` the slot count of query *q*, `a_q` the slots it answered and `p_q` those judged
+correct, over `Q` scored queries:
+
+```
+PS(answered)  = (1/Q) · Σ_q p_q / a_q      # printed by web_ps_score.py
+PS(all-slots) = (1/Q) · Σ_q p_q / S_q      # printed by slot_coverage.py — use this
+SR            = (1/Q) · Σ_q 1[final answer correct]
+```
+
+Both are **macro-averages over queries**, not `Σp / Σs` over slots, and `S_q = len(question)`
+**includes the final combined query** — the 142 slots of the controlled subset are 122
+sub-queries plus 20 final queries. The final query is counted in `PS` as well as `SR`, so the
+two are not independent. Full statement in
+[`../docs/evaluation_settings.md`](../docs/evaluation_settings.md).
+
 `slot_coverage.py` reports coverage together with both denominators. **Cross-system PS
 comparisons should use the all-slots denominator**; see
 [`../docs/evaluation_settings.md`](../docs/evaluation_settings.md) for the tabulated values.

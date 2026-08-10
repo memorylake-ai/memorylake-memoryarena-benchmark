@@ -1,9 +1,9 @@
 # MemoryArena Benchmark with MemoryLake
 
-Companion release for ***Workload-Dependent Returns to Memory Representation Structure: A
-Controlled Study on MemoryArena*** — evaluation settings, task-sampling manifests, and
-protocol documentation for a controlled comparison of four agent memory systems across all
-five MemoryArena task domains.
+Companion release for ***MemoryLake on MemoryArena: A Matched Study of Agent Memory
+Backends*** — evaluation settings, task-sampling manifests, and protocol documentation for a
+matched system-level comparison of four agent memory backends across all five MemoryArena
+task domains.
 
 ## Why this study
 
@@ -22,9 +22,12 @@ and a **Success Rate (SR)** for whether the task's actual goal was reached.
 
 This project asks what those two measures are usually assumed to answer together: **across
 task domains, when does a memory representation's process-level completeness predict its
-practical outcome, and when does it not?** We answer it with a **single-variable controlled
+practical outcome, and when does it not?** We answer it with a **matched system-level
 comparison** — one agent framework, one base model, one batch of task samples, one scoring
-protocol, with the **memory layer as the only experimental variable**:
+protocol, with the **memory backend as the intentionally changed component**. A backend is not
+a single variable: swapping it also changes write policy, retrieval, consolidation, prompt
+assembly and fallback behaviour at once, so what is measured is the effect of a complete
+backend configuration, not of representation structure in isolation:
 
 - **MemoryLake** — structured multi-track memory (confirmed conclusions, supporting
   evidence, reusable skills, each under a different presence policy) →
@@ -51,17 +54,22 @@ Base model, per-task samples, metrics and denominators:
   the final-success gap is tenfold larger (**SR 20.0% vs 10.0%**). A small process-level gap
   can hide a much larger gap in final success — the reverse of what a process-level comparison
   alone would suggest.
-- **The two exceptions are group travel planning and bundled web shopping**, both dominated by
-  high-volume, homogeneous verbatim replay, where full verbatim context matches or beats every
-  memory representation (travel **SPS 53.1% vs 43.0%**; shopping **step-match 30.0% vs 29.6%**,
-  with the top three systems inside 0.4pp and therefore indistinguishable at this sample size).
+- **The clear exception is group travel planning**, a workload dominated by high-volume,
+  homogeneous verbatim replay, where full verbatim context beats every memory representation
+  (**SPS 53.1% vs 43.0%**). Bundled shopping separates no
+  system at all: on the 50-bundle subset the top three span 2.7pp (text-embedding 31.0%,
+  MemoryLake 30.0%, long context 28.3%) and on the full 150-bundle set they span 0.4pp in a
+  different order (long context 30.0%, text-embedding 29.7%, MemoryLake 29.6%) — an ordering
+  that flips with the sample is not a finding, and we do not read one from it.
 
 Together: **memory representation structure should be matched to the structure of the
 workload it serves, and that match should be validated against task outcomes (SR) rather
-than process-level completeness (PS) alone.** The two workloads where structure does not pay
-off are precisely the replay-dominated ones, which is the same boundary seen from both sides.
+than process-level completeness (PS) alone.** The one workload where structure does not pay
+off is the replay-dominated one, and the one workload that separates nothing is the one whose
+end-to-end objective almost nobody reaches.
 
-The evaluated scale behind each number — the full 150-bundle shopping set, the controlled
+The evaluated scale behind each number — the 50-bundle shopping subset and the full 150-bundle
+set it is drawn from, the controlled
 20-query multi-hop subset and how that subset is drawn — is stated in
 [`docs/evaluation_settings.md` § Tasks, datasets and evaluated scale](docs/evaluation_settings.md#tasks-datasets-and-evaluated-scale),
 with the exact items in [`eval/queries/`](eval/queries/) and the per-item scores in
@@ -147,10 +155,10 @@ measurements.
 ## Citation
 
 ```bibtex
-@article{zhan2026workload,
-  title={Workload-Dependent Returns to Memory Representation Structure:
-         A Controlled Study on MemoryArena},
-  author={Zhan, Chaoqun and Zhou, Qiang and Li, Guannan and Wang, Qianjin},
+@article{zhan2026memorylake,
+  title={MemoryLake on MemoryArena: A Matched Study of Agent Memory Backends},
+  author={Zhan, Chaoqun and Zhou, Qiang and Li, Guannan and Huang, Zhenqiang and
+          Wang, Qianjin},
   note={MemoryLake Team},
   year={2026}
 }
