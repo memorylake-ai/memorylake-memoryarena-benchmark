@@ -86,7 +86,7 @@ ordered sequence of interdependent subtasks; memory accumulates and transfers kn
   **How that subset is drawn.** It is a deterministic **proportional stratified sample on
   decomposition depth** — no random seed is involved:
 
-  1. stratify the 221 decomposed queries by depth (`num_subqueries`, i.e. sub-queries plus the
+  1. stratify the 221 decomposed queries by depth (`num_slots`, i.e. sub-queries plus the
      final combined query);
   2. quota per stratum = `round(stratum_size × 20 / 221)`;
   3. within a stratum, take the lowest query ids.
@@ -128,10 +128,9 @@ ordered sequence of interdependent subtasks; memory accumulates and transfers kn
      `S_q = len(question)`, and in the dataset `question[0..N-2]` are the sub-queries while
      `question[-1]` is the final combined query. So the controlled subset's **142 slots are
      122 sub-queries + 20 final queries**, and the full set's **1,641 slots are 1,420 + 221**.
-     Neither figure is a count of sub-queries alone. The `num_subqueries` column in
-     [`../eval/queries/web_search_memorylake_221_ids.tsv`](../eval/queries/web_search_memorylake_221_ids.tsv)
-     is this slot count too, despite its name — the column is kept as published so existing
-     readers of the manifest do not break.
+     Neither figure is a count of sub-queries alone. The manifests carry this slot count in
+     their `num_slots` column (renamed from `num_subqueries`, which described its contents
+     incorrectly; the values are unchanged).
   2. **The final query is inside `PS`.** `web_ps_score.py` adds it to both *p_q* and *a_q*.
      `PS` and `SR` therefore share an item and are not independent measures of "process" and
      "outcome".
